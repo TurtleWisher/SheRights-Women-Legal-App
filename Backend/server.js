@@ -6,6 +6,7 @@ require('dotenv').config();
 // Bringing in our pantry connection
 const db = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const caseRoutes = require('./routes/caseRoutes');
 // Creating the kitchen (the Express application)
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(cors());
 // Without this, Express can't understand the data sent from the frontend
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/cases', caseRoutes);
 // --- HEALTH CHECK ROUTE ---
 // This is a simple test: is the kitchen open and running?
 // Like knocking on the kitchen door to see if anyone is inside
