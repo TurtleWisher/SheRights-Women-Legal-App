@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SheRights — My Cases</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    /* ── CASES PAGE SPECIFIC STYLES ─────────────── */
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar — same as dashboard */
+    .sidebar {
+      background: var(--color-900);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-200);
+      text-decoration: none;
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-800);
+    }
+
+    .sidebar-logo span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--color-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--color-300);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link i { font-size: 20px; flex-shrink: 0; }
+    .sidebar-link:hover { background: var(--color-800); color: var(--color-200); }
+    .sidebar-link.active { background: var(--color-700); color: var(--color-200); }
+
+    .sidebar-bottom {
+      border-top: 1px solid var(--color-800);
+      padding-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: var(--color-700);
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-200);
+      font-size: 16px; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* ── MAIN ────────────────────────────────────── */
+    .main-content { padding: var(--space-xl); }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* ── TABS ────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: var(--space-xl);
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+
+    .tab-btn.active {
+      background: var(--color-700);
+      color: var(--color-200);
+    }
+
+    /* ── CASE LIST ───────────────────────────────── */
+    .cases-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      display: block;
+    }
+
+    .case-card:hover {
+      border-color: var(--color-300);
+      box-shadow: 0 4px 16px rgba(9,20,19,0.08);
+      transform: translateY(-1px);
+    }
+
+    .case-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .case-card-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .case-id-badge {
+      background: var(--color-50);
+      color: var(--color-700);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+
+    .case-card-title h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .case-card-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--space-md);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .case-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .case-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+
+    .case-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .case-meta-item i { font-size: 14px; }
+
+    /* ── FILE CASE MODAL ─────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 20, 19, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform var(--transition);
+    }
+
+    .modal-overlay.visible .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+
+    .modal-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: var(--color-50);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--color-700);
+      transition: all var(--transition);
+    }
+
+    .modal-close:hover { background: var(--color-100); }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    /* ── TIMELINE (case detail inline) ──────────── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: var(--space-md);
+      padding-bottom: var(--space-lg);
+      position: relative;
+    }
+
+    /* Vertical line connecting timeline dots */
+    .timeline-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 28px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-light);
+    }
+
+    .timeline-dot {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-50);
+      border: 2px solid var(--color-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-dot.active {
+      background: var(--color-700);
+      border-color: var(--color-700);
+      color: var(--color-200);
+    }
+
+    .timeline-content { flex: 1; }
+
+    .timeline-content h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .timeline-content p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .timeline-content span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── EVIDENCE UPLOAD AREA ────────────────────── */
+    .upload-area {
+      border: 2px dashed var(--border-mid);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .upload-area:hover {
+      border-color: var(--color-500);
+      background: var(--color-50);
+    }
+
+    .upload-area i {
+      font-size: 36px;
+      color: var(--color-400);
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .evidence-item {
+      background: var(--color-50);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+      font-size: 12px;
+      color: var(--color-700);
+    }
+
+    .evidence-item i { font-size: 24px; margin-bottom: 4px; display: block; }
+
+    /* ── DETAIL VIEW ─────────────────────────────── */
+    .detail-panel {
+      display: none;
+      position: fixed;
+      right: 0; top: 0; bottom: 0;
+      width: 480px;
+      background: var(--bg-card);
+      box-shadow: -4px 0 24px rgba(9,20,19,0.12);
+      z-index: 150;
+      overflow-y: auto;
+      padding: var(--space-xl);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .detail-panel.open {
+      display: block;
+      transform: translateX(0);
+    }
+
+    .detail-close {
+      position: absolute;
+      top: var(--space-lg);
+      right: var(--space-lg);
+      width: 36px; height: 36px;
+      background: var(--color-50);
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer; font-size: 20px;
+      color: var(--color-700);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-2xl);
+      background: var(--bg-card);
+      border: 1px dashed var(--border-mid);
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--color-300);
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+
+    .empty-state h3 { margin-bottom: 8px; }
+    .empty-state p { margin-bottom: var(--space-lg); color: var(--text-secondary); }
+
+    /* ── ALERT ───────────────────────────────────── */
+    .page-alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: var(--space-md);
+      border-left: 3px solid;
+      display: none;
+    }
+
+    .page-alert.visible { display: block; }
+    .page-alert.success { background: var(--color-50); color: var(--color-700); border-color: var(--color-500); }
+    .page-alert.error   { background: var(--error-light); color: var(--error); border-color: var(--error); }
+
+    @media (max-width: 768px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-content { padding: var(--space-lg) var(--space-md); }
+      .detail-panel { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      SheRights
+      <span>শিরাইটস</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+      </a>
+      <a href="cases.html" class="sidebar-link active">
+        <i class="ti ti-file-description"></i><span>My Cases</span>
+      </a>
+      <a href="learn.html" class="sidebar-link">
+        <i class="ti ti-book"></i><span>Learn Rights</span>
+      </a>
+      <a href="chat.html" class="sidebar-link">
+        <i class="ti ti-message-circle"></i><span>Legal Help</span>
+      </a>
+      <a href="report.html" class="sidebar-link">
+        <i class="ti ti-map-pin"></i><span>Report Issue</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div style="font-size:13px;color:var(--color-200);font-weight:600;" id="sidebar-username"></div>
+          <div style="font-size:11px;color:var(--color-400);" id="sidebar-role"></div>
+        </div>
+      </div>
+      <div class="lang-toggle" style="width:100%;">
+        <button class="lang-btn active" data-lang="en" style="flex:1;">EN</button>
+        <button class="lang-btn" data-lang="bn" style="flex:1;">বাং</button>
+      </div>
+      <a href="#" class="sidebar-link" onclick="handleLogout()">
+        <i class="ti ti-logout"></i><span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 data-key="page-title">My Cases</h1>
+        <p style="color:var(--text-secondary);font-size:14px;margin-top:4px;"
+           data-key="page-subtitle">File, track and manage your legal cases</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">
+        <i class="ti ti-plus"></i>
+        <span data-key="btn-file">File New Case</span>
+      </button>
+    </div>
+
+    <div id="page-alert" class="page-alert"></div>
+
+    <!-- Filter tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="filterCases('all', this)"
+              data-key="tab-all">All Cases</button>
+      <button class="tab-btn" onclick="filterCases('active', this)"
+              data-key="tab-active">Active</button>
+      <button class="tab-btn" onclick="filterCases('resolved', this)"
+              data-key="tab-resolved">Resolved</button>
+    </div>
+
+    <!-- Cases list -->
+    <div class="cases-grid" id="cases-grid">
+      <div class="skeleton" style="height:120px;border-radius:16px;"></div>
+      <div class="skeleton" style="height:120px;border-radius:16px;opacity:.6;"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FILE CASE MODAL
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-key="modal-title">File a New Case</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div id="modal-alert" class="page-alert"></div>
+
+    <div class="modal-form">
+
+      <div class="form-group">
+        <label class="form-label" data-key="label-category">Case Category</label>
+        <select class="form-select" id="case-category">
+          <option value="">Select a category</option>
+          <option value="Domestic Violence">Domestic Violence</option>
+          <option value="Dowry">Dowry</option>
+          <option value="Divorce/Alimony">Divorce / Alimony</option>
+          <option value="Workplace Harassment">Workplace Harassment</option>
+          <option value="Land Dispute">Land Dispute</option>
+          <option value="Cybercrime">Cybercrime</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" data-key="label-description">
+          What happened? Tell us in your own words.
+        </label>
+        <textarea
+          class="form-textarea"
+          id="case-description"
+          placeholder="Describe the incident in detail. The more information you provide, the better we can help you."
+          style="min-height:140px;"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" data-key="label-date">When did this happen?</label>
+        <input class="form-input" type="date" id="case-date" />
+      </div>
+
+      <div style="display:flex;gap:var(--space-md);">
+        <button class="btn btn-secondary btn-full" onclick="closeModal()"
+                data-key="btn-cancel">Cancel</button>
+        <button class="btn btn-primary btn-full" id="submit-case-btn"
+                onclick="handleFileCase()">
+          <i class="ti ti-send"></i>
+          <span data-key="btn-submit">Submit Case</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CASE DETAIL PANEL (slides in from right)
+═══════════════════════════════════════════ -->
+<div class="detail-panel" id="detail-panel">
+  <button class="detail-close" onclick="closeDetail()">
+    <i class="ti ti-x"></i>
+  </button>
+
+  <div id="detail-content">
+    <!-- Filled by JavaScript when a case is clicked -->
+  </div>
+</div>
+
+<script src="js/lang.js"></script>
+<script src="js/api.js"></script>
+<script>
+
+  // ── TRANSLATIONS ─────────────────────────────
+  Object.assign(translations.en, {
+    'page-title':       'My Cases',
+    'page-subtitle':    'File, track and manage your legal cases',
+    'btn-file':         'File New Case',
+    'tab-all':          'All Cases',
+    'tab-active':       'Active',
+    'tab-resolved':     'Resolved',
+    'modal-title':      'File a New Case',
+    'label-category':   'Case Category',
+    'label-description':'What happened? Tell us in your own words.',
+    'label-date':       'When did this happen?',
+    'btn-cancel':       'Cancel',
+    'btn-submit':       'Submit Case',
+    'no-cases-title':   'No cases yet',
+    'no-cases-desc':    'You have not filed any cases yet',
+    'no-cases-btn':     'File your first case',
+  });
+
+  Object.assign(translations.bn, {
+    'page-title':       'আমার মামলা',
+    'page-subtitle':    'আপনার আইনি মামলা দায়ের, ট্র্যাক এবং পরিচালনা করুন',
+    'btn-file':         'নতুন মামলা দায়ের',
+    'tab-all':          'সব মামলা',
+    'tab-active':       'সক্রিয়',
+    'tab-resolved':     'সমাধান হয়েছে',
+    'modal-title':      'নতুন মামলা দায়ের করুন',
+    'label-category':   'মামলার ধরন',
+    'label-description':'কী ঘটেছে? নিজের ভাষায় বলুন।',
+    'label-date':       'এটি কখন ঘটেছিল?',
+    'btn-cancel':       'বাতিল',
+    'btn-submit':       'মামলা জমা দিন',
+    'no-cases-title':   'এখনো কোনো মামলা নেই',
+    'no-cases-desc':    'আপনি এখনো কোনো মামলা দায়ের করেননি',
+    'no-cases-btn':     'প্রথম মামলা দায়ের করুন',
+  });
+
+  // ── GUARD ─────────────────────────────────────
+  const token = localStorage.getItem('sr-token');
+  const user  = JSON.parse(localStorage.getItem('sr-user') || 'null');
+  if (!token || !user) window.location.href = 'auth.html';
+
+  // Set sidebar user info
+  document.getElementById('sidebar-username').textContent = user.phone_number;
+  document.getElementById('sidebar-role').textContent     = user.role;
+  document.getElementById('user-avatar').textContent      =
+    (user.phone_number || 'U')[0].toUpperCase();
+
+  // ── STATE ─────────────────────────────────────
+  let allCases      = [];
+  let currentFilter = 'all';
+
+  // ── BADGE ─────────────────────────────────────
+  function getBadgeClass(status) {
+    const map = {
+      'Draft':           'badge-draft',
+      'Submitted':       'badge-submitted',
+      'Under Review':    'badge-review',
+      'Lawyer Assigned': 'badge-lawyer',
+      'In Court':        'badge-court',
+      'Resolved':        'badge-resolved',
+      'Closed':          'badge-closed',
+    };
+    return map[status] || 'badge-draft';
+  }
+
+  function isActive(s) {
+    return ['Submitted','Under Review','Lawyer Assigned','In Court'].includes(s);
+  }
+
+  // ── LOAD CASES ───────────────────────────────
+  async function loadCases() {
+    const res = await Cases.getAll();
+    if (!res.ok) return;
+
+    allCases = res.data.data;
+    renderCases(allCases);
+  }
+
+  // ── RENDER CASES ─────────────────────────────
+  function renderCases(cases) {
+    const grid = document.getElementById('cases-grid');
+
+    if (cases.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <i class="ti ti-file-off"></i>
+          <h3 data-key="no-cases-title">No cases yet</h3>
+          <p data-key="no-cases-desc">You have not filed any cases yet</p>
+          <button class="btn btn-primary" onclick="openModal()"
+                  data-key="no-cases-btn">File your first case</button>
+        </div>`;
+      applyLanguage(localStorage.getItem('sr-lang') || 'en');
+      return;
+    }
+
+    grid.innerHTML = cases.map(c => `
+      <a class="case-card" onclick="openDetail(${c.case_id}); return false;" href="#">
+        <div class="case-card-header">
+          <div class="case-card-title">
+            <span class="case-id-badge">#${c.case_id}</span>
+            <h3>${c.case_category}</h3>
+          </div>
+          <span class="badge ${getBadgeClass(c.status)}">${c.status}</span>
+        </div>
+        <p class="case-card-body">${c.incident_description || 'No description provided.'}</p>
+        <div class="case-card-footer">
+          <div class="case-meta">
+            <div class="case-meta-item">
+              <i class="ti ti-calendar"></i>
+              ${c.incident_date
+                ? new Date(c.incident_date).toLocaleDateString('en-GB')
+                : 'Date not specified'}
+            </div>
+            <div class="case-meta-item">
+              <i class="ti ti-clock"></i>
+              Filed ${new Date(c.filed_at).toLocaleDateString('en-GB')}
+            </div>
+          </div>
+          <div style="color:var(--color-400);font-size:18px;">
+            <i class="ti ti-chevron-right"></i>
+          </div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  // ── FILTER CASES ─────────────────────────────
+  function filterCases(filter, btn) {
+    currentFilter = filter;
+
+    // Update active tab button
+    document.querySelectorAll('.tab-btn')
+      .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Filter the cases array
+    let filtered = allCases;
+    if (filter === 'active')   filtered = allCases.filter(c => isActive(c.status));
+    if (filter === 'resolved') filtered = allCases.filter(c => c.status === 'Resolved');
+
+    renderCases(filtered);
+  }
+
+  // ── MODAL ─────────────────────────────────────
+  function openModal() {
+    document.getElementById('modal-overlay').classList.add('visible');
+    // Pre-fill today's date
+    document.getElementById('case-date').value =
+      new Date().toISOString().split('T')[0];
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('visible');
+    hideAlert('modal-alert');
+    document.getElementById('case-category').value    = '';
+    document.getElementById('case-description').value = '';
+  }
+
+  // Close modal when clicking the dark overlay behind it
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  }
+
+  // ── FILE A CASE ───────────────────────────────
+  async function handleFileCase() {
+    const category    = document.getElementById('case-category').value;
+    const description = document.getElementById('case-description').value.trim();
+    const date        = document.getElementById('case-date').value;
+
+    if (!category) {
+      return showAlert('modal-alert', 'Please select a case category.', 'error');
+    }
+
+    if (!description || description.length < 20) {
+      return showAlert('modal-alert',
+        'Please describe what happened in at least 20 characters.', 'error');
+    }
+
+    setLoading('submit-case-btn', true);
+
+    const res = await Cases.file({
+      case_category:        category,
+      incident_description: description,
+      incident_date:        date || null
+    });
+
+    setLoading('submit-case-btn', false);
+
+    if (!res.ok) {
+      return showAlert('modal-alert', res.data.message || 'Failed to file case.', 'error');
+    }
+
+    closeModal();
+    showAlert('page-alert', 'Case filed successfully! It is now under review.', 'success');
+    loadCases();
+
+    // Auto-hide the success alert after 4 seconds
+    setTimeout(() => hideAlert('page-alert'), 4000);
+  }
+
+  // ── CASE DETAIL ───────────────────────────────
+  async function openDetail(caseId) {
+    const panel = document.getElementById('detail-panel');
+    const content = document.getElementById('detail-content');
+
+    // Show loading state immediately
+    content.innerHTML = `
+      <div style="padding-top:48px;">
+        <div class="skeleton" style="height:24px;width:60%;margin-bottom:12px;"></div>
+        <div class="skeleton" style="height:16px;width:40%;margin-bottom:32px;"></div>
+        <div class="skeleton" style="height:80px;margin-bottom:16px;"></div>
+        <div class="skeleton" style="height:80px;opacity:.6;"></div>
+      </div>`;
+
+    panel.classList.add('open');
+
+    // Fetch case details from backend
+    const res = await Cases.getOne(caseId);
+    if (!res.ok) return;
+
+    const c   = res.data.data;
+    const logs = c.tracking_logs || [];
+    const evidences = c.evidences || [];
+
+    // Render the full case detail with timeline
+    content.innerHTML = `
+      <div style="padding-top:48px;">
+
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+          <span class="case-id-badge">#${c.case_id}</span>
+          <span class="badge ${getBadgeClass(c.status)}">${c.status}</span>
+        </div>
+
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:4px;">
+          ${c.case_category}
+        </h2>
+
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:var(--space-lg);">
+          Filed on ${new Date(c.filed_at).toLocaleDateString('en-GB')}
+          ${c.incident_date
+            ? ' · Incident on ' + new Date(c.incident_date).toLocaleDateString('en-GB')
+            : ''}
+        </p>
+
+        <div class="card" style="margin-bottom:var(--space-lg);">
+          <h4 style="margin-bottom:8px;font-size:13px;color:var(--text-muted);
+                     text-transform:uppercase;letter-spacing:0.05em;">
+            What Happened
+          </h4>
+          <p style="font-size:14px;line-height:1.7;">${c.incident_description}</p>
+        </div>
+
+        <!-- Evidence section -->
+        <div style="margin-bottom:var(--space-lg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;
+                      margin-bottom:var(--space-md);">
+            <h4 style="font-size:14px;font-weight:600;">
+              Evidence (${evidences.length})
+            </h4>
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer;">
+              <i class="ti ti-upload"></i> Upload
+              <input type="file" style="display:none;"
+                     onchange="handleEvidenceUpload(${c.case_id}, this)" />
+            </label>
+          </div>
+
+          ${evidences.length > 0
+            ? `<div class="evidence-grid">
+                ${evidences.map(e => `
+                  <a href="${e.file_url}" target="_blank" class="evidence-item">
+                    <i class="ti ti-${e.file_type === 'Image' ? 'photo'
+                      : e.file_type === 'PDF' ? 'file-text'
+                      : e.file_type === 'Audio' ? 'microphone'
+                      : 'video'}"></i>
+                    ${e.file_type}
+                  </a>`).join('')}
+               </div>`
+            : `<div style="text-align:center;padding:20px;color:var(--text-muted);
+                            font-size:13px;border:1px dashed var(--border-mid);
+                            border-radius:var(--radius-md);">
+                No evidence uploaded yet
+               </div>`}
+        </div>
+
+        <!-- Timeline -->
+        <h4 style="font-size:14px;font-weight:600;margin-bottom:var(--space-md);">
+          Case Timeline
+        </h4>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot active">
+              <i class="ti ti-file-plus" style="font-size:14px;color:var(--color-200);"></i>
+            </div>
+            <div class="timeline-content">
+              <h4>Case Filed</h4>
+              <p>Your case has been submitted to SheRights</p>
+              <span>${new Date(c.filed_at).toLocaleString('en-GB')}</span>
+            </div>
+          </div>
+
+          ${logs.map(log => `
+            <div class="timeline-item">
+              <div class="timeline-dot active">
+                <i class="ti ti-arrow-right" style="font-size:12px;color:var(--color-200);"></i>
+              </div>
+              <div class="timeline-content">
+                <h4>${log.previous_status} → ${log.new_status}</h4>
+                <p>${log.remarks || 'Status updated'}</p>
+                <span>${new Date(log.updated_at).toLocaleString('en-GB')}</span>
+              </div>
+            </div>
+          `).join('')}
+
+          ${logs.length === 0 ? `
+            <div class="timeline-item">
+              <div class="timeline-dot">
+                <i class="ti ti-dots" style="font-size:12px;color:var(--color-400);"></i>
+              </div>
+              <div class="timeline-content">
+                <h4 style="color:var(--text-muted);">Awaiting review</h4>
+                <p style="color:var(--text-muted);">
+                  Our team will review your case shortly
+                </p>
+              </div>
+            </div>` : ''}
+        </div>
+
+      </div>`;
+  }
+
+  function closeDetail() {
+    document.getElementById('detail-panel').classList.remove('open');
+  }
+
+  // ── EVIDENCE UPLOAD ───────────────────────────
+  async function handleEvidenceUpload(caseId, input) {
+    if (!input.files[0]) return;
+
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    formData.append('description', 'Uploaded from case detail view');
+
+    const res = await Evidence.upload(caseId, formData);
+
+    if (res.ok) {
+      showAlert('page-alert', 'Evidence uploaded successfully.', 'success');
+      openDetail(caseId);
+      setTimeout(() => hideAlert('page-alert'), 3000);
+    } else {
+      showAlert('page-alert', 'Evidence upload failed. Please try again.', 'error');
+    }
+  }
+
+  // ── HELPERS ───────────────────────────────────
+  function showAlert(id, message, type) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.className   = `page-alert ${type} visible`;
+  }
+
+  function hideAlert(id) {
+    const el = document.getElementById(id);
+    if (el) el.className = 'page-alert';
+  }
+
+  function setLoading(id, loading) {
+    const btn    = document.getElementById(id);
+    btn.disabled = loading;
+    btn.style.opacity = loading ? '0.7' : '1';
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('sr-token');
+    localStorage.removeItem('sr-user');
+    window.location.href = 'auth.html';
+  }
+
+  // ── INIT ──────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCases();
+
+    // If arriving from dashboard with ?action=new, open modal automatically
+    if (new URLSearchParams(window.location.search).get('action') === 'new') {
+      openModal();
+    }
+  });
+</script>
+</body>
+</html>

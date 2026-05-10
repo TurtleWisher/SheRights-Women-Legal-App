@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SheRights — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    /* ── DASHBOARD SPECIFIC STYLES ──────────────── */
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────── */
+    .sidebar {
+      background: var(--color-900);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-200);
+      text-decoration: none;
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-800);
+    }
+
+    .sidebar-logo span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--color-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--color-300);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link i {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-link:hover {
+      background: var(--color-800);
+      color: var(--color-200);
+    }
+
+    .sidebar-link.active {
+      background: var(--color-700);
+      color: var(--color-200);
+    }
+
+    .sidebar-bottom {
+      border-top: 1px solid var(--color-800);
+      padding-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--color-700);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-200);
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .user-info h4 {
+      font-size: 13px;
+      color: var(--color-200);
+      font-weight: 600;
+    }
+
+    .user-info p {
+      font-size: 11px;
+      color: var(--color-400);
+    }
+
+    /* ── MAIN CONTENT ────────────────────────────── */
+    .main-content {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    /* ── TOP BAR ─────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+    }
+
+    .topbar-greeting h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .topbar-greeting p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    /* ── STAT CARDS ROW ──────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .stat-text h3 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .stat-text p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* ── QUICK ACTIONS ───────────────────────────── */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .action-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      display: block;
+      box-shadow: var(--shadow-card);
+    }
+
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(9, 20, 19, 0.1);
+      border-color: var(--color-300);
+    }
+
+    .action-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto var(--space-md);
+    }
+
+    .action-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .action-card p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ── CONTENT GRID ────────────────────────────── */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-xl);
+    }
+
+    /* ── SECTION HEADER ──────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .section-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ── CASE LIST ───────────────────────────────── */
+    .case-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .case-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+
+    .case-item:hover {
+      border-color: var(--color-300);
+      box-shadow: var(--shadow-card);
+    }
+
+    .case-item-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .case-number {
+      width: 36px;
+      height: 36px;
+      background: var(--color-50);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-700);
+      flex-shrink: 0;
+    }
+
+    .case-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .case-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .case-arrow {
+      color: var(--color-400);
+      font-size: 18px;
+    }
+
+    /* ── POINTS CARD ─────────────────────────────── */
+    .points-card {
+      background: var(--color-900);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      color: var(--color-200);
+      margin-bottom: var(--space-md);
+    }
+
+    .points-card h4 {
+      font-size: 13px;
+      color: var(--color-400);
+      font-weight: 500;
+      margin-bottom: var(--space-sm);
+    }
+
+    .points-number {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent-400);
+      line-height: 1;
+    }
+
+    .points-label {
+      font-size: 13px;
+      color: var(--color-400);
+      margin-top: 4px;
+    }
+
+    .points-bar-wrap {
+      background: var(--color-800);
+      border-radius: var(--radius-full);
+      height: 6px;
+      margin-top: var(--space-md);
+      overflow: hidden;
+    }
+
+    .points-bar {
+      height: 100%;
+      background: var(--accent-400);
+      border-radius: var(--radius-full);
+      transition: width 1s ease;
+    }
+
+    .points-next {
+      font-size: 11px;
+      color: var(--color-400);
+      margin-top: 6px;
+    }
+
+    /* ── RECENT ACTIVITY ─────────────────────────── */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-500);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .activity-text p {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .activity-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-xl);
+      background: var(--bg-card);
+      border: 1px dashed var(--border-mid);
+      border-radius: var(--radius-lg);
+    }
+
+    .empty-state i {
+      font-size: 40px;
+      color: var(--color-300);
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+
+    .empty-state h4 {
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    /* ── LOADING SKELETON ────────────────────────── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--color-50) 25%, var(--color-100) 50%, var(--color-50) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── MOBILE ──────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .stats-row,
+      .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-content { padding: var(--space-lg) var(--space-md); }
+      .content-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .quick-actions { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+
+<body>
+<div class="dashboard-layout">
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <a href="dashboard.html" class="sidebar-logo">
+      SheRights
+      <span data-key="logo-sub">শিরাইটস</span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-link active">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+        <span data-key="nav-dashboard">Dashboard</span>
+      </a>
+      <a href="cases.html" class="sidebar-link">
+        <i class="ti ti-file-description" aria-hidden="true"></i>
+        <span data-key="nav-cases">My Cases</span>
+      </a>
+      <a href="learn.html" class="sidebar-link">
+        <i class="ti ti-book" aria-hidden="true"></i>
+        <span data-key="nav-learn">Learn Rights</span>
+      </a>
+      <a href="chat.html" class="sidebar-link">
+        <i class="ti ti-message-circle" aria-hidden="true"></i>
+        <span data-key="nav-chat">Legal Help</span>
+      </a>
+      <a href="report.html" class="sidebar-link">
+        <i class="ti ti-map-pin" aria-hidden="true"></i>
+        <span data-key="nav-report">Report Issue</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div class="user-info">
+          <h4 id="sidebar-username">Loading...</h4>
+          <p id="sidebar-role">citizen</p>
+        </div>
+      </div>
+      <div class="lang-toggle" style="width:100%;">
+        <button class="lang-btn active" data-lang="en" style="flex:1;">EN</button>
+        <button class="lang-btn" data-lang="bn" style="flex:1;">বাং</button>
+      </div>
+      <a href="#" class="sidebar-link" onclick="handleLogout()">
+        <i class="ti ti-logout" aria-hidden="true"></i>
+        <span data-key="nav-logout">Sign Out</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════ -->
+  <main class="main-content">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="topbar-greeting">
+        <h2 id="greeting-text">Good morning 👋</h2>
+        <p id="greeting-sub" data-key="greeting-sub">
+          Here is your SheRights overview for today
+        </p>
+      </div>
+      <div class="topbar-right">
+        <a href="cases.html" class="btn btn-primary btn-sm">
+          <i class="ti ti-plus" aria-hidden="true"></i>
+          <span data-key="btn-new-case">New Case</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--color-50);">
+          <i class="ti ti-file-description" style="color:var(--color-700);" aria-hidden="true"></i>
+        </div>
+        <div class="stat-text">
+          <h3 id="stat-total-cases">—</h3>
+          <p data-key="stat-total-cases">Total cases</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#EBF8F2;">
+          <i class="ti ti-loader" style="color:var(--color-600);" aria-hidden="true"></i>
+        </div>
+        <div class="stat-text">
+          <h3 id="stat-active-cases">—</h3>
+          <p data-key="stat-active-cases">Active cases</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--accent-50);">
+          <i class="ti ti-star" style="color:var(--accent-600);" aria-hidden="true"></i>
+        </div>
+        <div class="stat-text">
+          <h3 id="stat-points">—</h3>
+          <p data-key="stat-points">Points earned</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--color-100);">
+          <i class="ti ti-certificate" style="color:var(--color-600);" aria-hidden="true"></i>
+        </div>
+        <div class="stat-text">
+          <h3 id="stat-modules">—</h3>
+          <p data-key="stat-modules">Modules done</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick-actions">
+      <a href="cases.html?action=new" class="action-card">
+        <div class="action-icon" style="background:var(--color-50);">
+          <i class="ti ti-file-plus" style="color:var(--color-700);" aria-hidden="true"></i>
+        </div>
+        <h4 data-key="action-file">File a Case</h4>
+        <p data-key="action-file-sub">Submit a legal complaint</p>
+      </a>
+      <a href="learn.html" class="action-card">
+        <div class="action-icon" style="background:var(--accent-50);">
+          <i class="ti ti-book" style="color:var(--accent-800);" aria-hidden="true"></i>
+        </div>
+        <h4 data-key="action-learn">Learn Rights</h4>
+        <p data-key="action-learn-sub">Comics, quizzes and points</p>
+      </a>
+      <a href="chat.html" class="action-card">
+        <div class="action-icon" style="background:var(--color-100);">
+          <i class="ti ti-message-circle" style="color:var(--color-700);" aria-hidden="true"></i>
+        </div>
+        <h4 data-key="action-chat">Get Legal Help</h4>
+        <p data-key="action-chat-sub">Chat with AI or a lawyer</p>
+      </a>
+      <a href="report.html" class="action-card">
+        <div class="action-icon" style="background:#FFCDD2;">
+          <i class="ti ti-map-pin" style="color:#7A1F1F;" aria-hidden="true"></i>
+        </div>
+        <h4 data-key="action-report">Report Issue</h4>
+        <p data-key="action-report-sub">Drop a pin anonymously</p>
+      </a>
+    </div>
+
+    <!-- Content grid -->
+    <div class="content-grid">
+
+      <!-- Left: Recent cases -->
+      <div>
+        <div class="section-header">
+          <h3 data-key="section-cases">Recent Cases</h3>
+          <a href="cases.html" class="btn btn-secondary btn-sm" data-key="view-all">
+            View all
+          </a>
+        </div>
+        <div class="case-list" id="case-list">
+          <!-- Filled by JavaScript -->
+          <div class="skeleton" style="height:72px;"></div>
+          <div class="skeleton" style="height:72px; opacity:0.6;"></div>
+          <div class="skeleton" style="height:72px; opacity:0.3;"></div>
+        </div>
+      </div>
+
+      <!-- Right: Points + activity -->
+      <div>
+
+        <!-- Points card -->
+        <div class="points-card">
+          <h4 data-key="points-title">YOUR POINTS</h4>
+          <div class="points-number" id="points-display">0</div>
+          <div class="points-label" data-key="points-label">total points earned</div>
+          <div class="points-bar-wrap">
+            <div class="points-bar" id="points-bar" style="width:0%"></div>
+          </div>
+          <div class="points-next" id="points-next"></div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="card">
+          <div class="section-header" style="margin-bottom:var(--space-md)">
+            <h3 data-key="section-activity">Recent Activity</h3>
+          </div>
+          <div class="activity-list" id="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-text">
+                <p data-key="activity-welcome">Welcome to SheRights!</p>
+                <span data-key="activity-welcome-sub">Your account is active and ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="js/lang.js"></script>
+<script src="js/api.js"></script>
+<script>
+  // ── TRANSLATIONS ─────────────────────────────
+  Object.assign(translations.en, {
+    'logo-sub':           'শিরাইটস',
+    'nav-dashboard':      'Dashboard',
+    'nav-cases':          'My Cases',
+    'nav-learn':          'Learn Rights',
+    'nav-chat':           'Legal Help',
+    'nav-report':         'Report Issue',
+    'nav-logout':         'Sign Out',
+    'greeting-sub':       'Here is your SheRights overview for today',
+    'btn-new-case':       'New Case',
+    'stat-total-cases':   'Total cases',
+    'stat-active-cases':  'Active cases',
+    'stat-points':        'Points earned',
+    'stat-modules':       'Modules done',
+    'action-file':        'File a Case',
+    'action-file-sub':    'Submit a legal complaint',
+    'action-learn':       'Learn Rights',
+    'action-learn-sub':   'Comics, quizzes and points',
+    'action-chat':        'Get Legal Help',
+    'action-chat-sub':    'Chat with AI or a lawyer',
+    'action-report':      'Report Issue',
+    'action-report-sub':  'Drop a pin anonymously',
+    'section-cases':      'Recent Cases',
+    'view-all':           'View all',
+    'points-title':       'YOUR POINTS',
+    'points-label':       'total points earned',
+    'section-activity':   'Recent Activity',
+    'activity-welcome':   'Welcome to SheRights!',
+    'activity-welcome-sub': 'Your account is active and ready',
+    'no-cases-title':     'No cases yet',
+    'no-cases-desc':      'When you file a case it will appear here',
+    'no-cases-btn':       'File your first case',
+  });
+
+  Object.assign(translations.bn, {
+    'logo-sub':           'SheRights',
+    'nav-dashboard':      'ড্যাশবোর্ড',
+    'nav-cases':          'আমার মামলা',
+    'nav-learn':          'অধিকার শিখুন',
+    'nav-chat':           'আইনি সহায়তা',
+    'nav-report':         'সমস্যা রিপোর্ট',
+    'nav-logout':         'সাইন আউট',
+    'greeting-sub':       'আজকের আপনার শিরাইটস সারসংক্ষেপ',
+    'btn-new-case':       'নতুন মামলা',
+    'stat-total-cases':   'মোট মামলা',
+    'stat-active-cases':  'সক্রিয় মামলা',
+    'stat-points':        'অর্জিত পয়েন্ট',
+    'stat-modules':       'সম্পন্ন মডিউল',
+    'action-file':        'মামলা দায়ের',
+    'action-file-sub':    'আইনি অভিযোগ জমা দিন',
+    'action-learn':       'অধিকার শিখুন',
+    'action-learn-sub':   'কমিকস, কুইজ এবং পয়েন্ট',
+    'action-chat':        'আইনি সহায়তা পান',
+    'action-chat-sub':    'এআই বা আইনজীবীর সাথে চ্যাট',
+    'action-report':      'সমস্যা রিপোর্ট করুন',
+    'action-report-sub':  'বেনামে পিন ড্রপ করুন',
+    'section-cases':      'সাম্প্রতিক মামলা',
+    'view-all':           'সব দেখুন',
+    'points-title':       'আপনার পয়েন্ট',
+    'points-label':       'মোট অর্জিত পয়েন্ট',
+    'section-activity':   'সাম্প্রতিক কার্যক্রম',
+    'activity-welcome':   'শিরাইটসে স্বাগতম!',
+    'activity-welcome-sub': 'আপনার অ্যাকাউন্ট সক্রিয় এবং প্রস্তুত',
+    'no-cases-title':     'এখনো কোনো মামলা নেই',
+    'no-cases-desc':      'মামলা দায়ের করলে এখানে দেখা যাবে',
+    'no-cases-btn':       'প্রথম মামলা দায়ের করুন',
+  });
+
+  // ── GUARD — redirect to login if not logged in ──
+  // Every protected page starts with this check.
+  // If no token exists, send back to auth.html
+  const token = localStorage.getItem('sr-token');
+  const user  = JSON.parse(localStorage.getItem('sr-user') || 'null');
+
+  if (!token || !user) {
+    window.location.href = 'auth.html';
+  }
+
+  // ── GREETING ─────────────────────────────────
+  // Show a different greeting based on time of day
+  function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  // ── BADGE COLOR ──────────────────────────────
+  function getBadgeClass(status) {
+    const map = {
+      'Draft':           'badge-draft',
+      'Submitted':       'badge-submitted',
+      'Under Review':    'badge-review',
+      'Lawyer Assigned': 'badge-lawyer',
+      'In Court':        'badge-court',
+      'Resolved':        'badge-resolved',
+      'Closed':          'badge-closed',
+    };
+    return map[status] || 'badge-draft';
+  }
+
+  // ── ACTIVE STATUS CHECK ───────────────────────
+  function isActive(status) {
+    return ['Submitted', 'Under Review', 'Lawyer Assigned', 'In Court'].includes(status);
+  }
+
+  // ── LOAD DASHBOARD DATA ───────────────────────
+  async function loadDashboard() {
+    // Set user info in sidebar
+    document.getElementById('sidebar-username').textContent = user.phone_number;
+    document.getElementById('sidebar-role').textContent = user.role;
+    document.getElementById('user-avatar').textContent =
+      (user.phone_number || 'U')[0].toUpperCase();
+
+    // Set greeting
+    document.getElementById('greeting-text').textContent =
+      `${getGreeting()} 👋`;
+
+    try {
+      // Load cases and progress in parallel
+      // Promise.all sends both requests simultaneously
+      // instead of waiting for one to finish before starting the other
+      const [casesRes, progressRes] = await Promise.all([
+        Cases.getAll(),
+        Learn.myProgress()
+      ]);
+
+      // ── CASES ───────────────────────────────
+      if (casesRes.ok) {
+        const cases = casesRes.data.data;
+        const total  = cases.length;
+        const active = cases.filter(c => isActive(c.status)).length;
+
+        document.getElementById('stat-total-cases').textContent  = total;
+        document.getElementById('stat-active-cases').textContent = active;
+
+        // Render recent cases (last 3)
+        const recent = cases.slice(0, 3);
+        const list   = document.getElementById('case-list');
+
+        if (recent.length === 0) {
+          list.innerHTML = `
+            <div class="empty-state">
+              <i class="ti ti-file-off" aria-hidden="true"></i>
+              <h4 data-key="no-cases-title">No cases yet</h4>
+              <p data-key="no-cases-desc">When you file a case it will appear here</p>
+              <a href="cases.html?action=new" class="btn btn-primary btn-sm" data-key="no-cases-btn">
+                File your first case
+              </a>
+            </div>`;
+          applyLanguage(localStorage.getItem('sr-lang') || 'en');
+        } else {
+          list.innerHTML = recent.map((c, i) => `
+            <a href="case-detail.html?id=${c.case_id}" class="case-item">
+              <div class="case-item-left">
+                <div class="case-number">#${c.case_id}</div>
+                <div class="case-info">
+                  <h4>${c.case_category}</h4>
+                  <p>${new Date(c.filed_at).toLocaleDateString('en-GB')}</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span class="badge ${getBadgeClass(c.status)}">${c.status}</span>
+                <i class="ti ti-chevron-right case-arrow" aria-hidden="true"></i>
+              </div>
+            </a>
+          `).join('');
+        }
+      }
+
+      // ── PROGRESS & POINTS ────────────────────
+      if (progressRes.ok) {
+        const points    = progressRes.data.data.total_points || 0;
+        const completed = progressRes.data.data.achievements
+          .filter(a => a.status === 'Completed').length;
+
+        document.getElementById('stat-points').textContent  = points;
+        document.getElementById('stat-modules').textContent = completed;
+        document.getElementById('points-display').textContent = points;
+
+        // Points progress bar — every 500 points = next level
+        const level      = Math.floor(points / 500);
+        const nextLevel  = (level + 1) * 500;
+        const pct        = Math.min(((points % 500) / 500) * 100, 100);
+
+        document.getElementById('points-bar').style.width  = `${pct}%`;
+        document.getElementById('points-next').textContent =
+          `${nextLevel - points} points to next level`;
+
+        // Populate activity feed from achievements
+        if (progressRes.data.data.achievements.length > 0) {
+          const activityList = document.getElementById('activity-list');
+          const activities   = progressRes.data.data.achievements.slice(0, 4);
+
+          activityList.innerHTML = activities.map(a => `
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent-600)"></div>
+              <div class="activity-text">
+                <p>Completed: ${a.title}</p>
+                <span>${a.score_earned} points earned · ${new Date(a.completed_at).toLocaleDateString('en-GB')}</span>
+              </div>
+            </div>
+          `).join('') + `
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-text">
+                <p>Account created</p>
+                <span>Welcome to SheRights</span>
+              </div>
+            </div>`;
+        }
+      }
+
+    } catch (err) {
+      console.error('Dashboard load error:', err);
+    }
+  }
+
+  // ── LOGOUT ───────────────────────────────────
+  function handleLogout() {
+    localStorage.removeItem('sr-token');
+    localStorage.removeItem('sr-user');
+    window.location.href = 'auth.html';
+  }
+
+  // Run everything when page loads
+  document.addEventListener('DOMContentLoaded', loadDashboard);
+</script>
+
+</body>
+</html>
