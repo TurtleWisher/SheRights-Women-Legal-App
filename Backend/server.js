@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const caseRoutes = require('./routes/caseRoutes');
 const gamificationRoutes = require('./routes/gamificationRoutes'); // with other requires
 const reportRoutes = require('./routes/reportRoutes');
+const evidenceRoutes = require('./routes/evidenceRoutes');
 // Creating the kitchen (the Express application)
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/learn', gamificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/cases/:caseId/evidence', evidenceRoutes);
 
 // --- HEALTH CHECK ROUTE ---
 // This is a simple test: is the kitchen open and running?
