@@ -1,0 +1,587 @@
+/* ============================================
+   SHERIGHTS — GLOBAL DESIGN SYSTEM
+   All pages import this file.
+   Change a variable here → changes everywhere.
+============================================ */
+
+/* ─── GOOGLE FONTS ───────────────────────────
+   Inter        → English text
+   Hind Siliguri → Bangla text
+   Both loaded together — the lang toggle
+   switches which one is active.
+──────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+/* ─── DESIGN TOKENS ──────────────────────────
+   Every color, spacing, and radius value
+   lives here as a CSS variable.
+   Never hardcode hex values in other files.
+──────────────────────────────────────────── */
+:root {
+  /* Brand green scale */
+  --color-900: #091413;
+  --color-800: #162B28;
+  --color-700: #285A48;
+  --color-600: #336B57;
+  --color-500: #408A71;
+  --color-400: #5A9E87;
+  --color-300: #7DB8A3;
+  --color-200: #B0E4CC;
+  --color-100: #D4F0E4;
+  --color-50:  #EBF8F2;
+
+  /* Accent gold — rewards, points, highlights */
+  --accent-800: #7A5800;
+  --accent-600: #D4A843;
+  --accent-400: #E8C06B;
+  --accent-50:  #FDF6E3;
+
+  /* Semantic colors */
+  --error:       #E24B4A;
+  --error-light: #FFCDD2;
+  --warning:     #D4A843;
+  --success:     #408A71;
+
+  /* Neutral gray */
+  --gray-900: #2C2C2A;
+  --gray-600: #888780;
+  --gray-200: #B4B2A9;
+  --gray-50:  #F1EFE8;
+
+  /* Surfaces */
+  --bg-page:   #EBF8F2;
+  --bg-card:   #FFFFFF;
+  --bg-dark:   #091413;
+
+  /* Text */
+  --text-primary:   #091413;
+  --text-secondary: #408A71;
+  --text-muted:     #7DB8A3;
+  --text-on-dark:   #B0E4CC;
+
+  /* Borders */
+  --border-light:  #D4F0E4;
+  --border-mid:    #B0E4CC;
+  --border-strong: #408A71;
+
+  /* Typography */
+  --font-en: 'Inter', sans-serif;
+  --font-bn: 'Hind Siliguri', sans-serif;
+  --font:    var(--font-en);
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 4px rgba(9, 20, 19, 0.06);
+  --shadow-nav:  0 2px 12px rgba(9, 20, 19, 0.15);
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+/* ─── BANGLA LANGUAGE MODE ───────────────────
+   When <html lang="bn"> is set by lang.js,
+   the font switches to Hind Siliguri globally.
+   Every font-size also increases slightly
+   because Bangla script needs more breathing room.
+──────────────────────────────────────────── */
+:lang(bn) {
+  --font: var(--font-bn);
+  font-size: 105%;
+}
+
+/* ─── RESET & BASE ───────────────────────────
+   Remove browser defaults so we start clean.
+──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-600);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--color-500);
+}
+
+/* ─── TYPOGRAPHY ──────────────────────────────
+   h1 → page titles
+   h2 → section titles
+   h3 → card titles
+   p   → body text
+──────────────────────────────────────────── */
+h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+h4 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+/* ─── LAYOUT ──────────────────────────────────
+   .container  → max width wrapper, centered
+   .section    → vertical section padding
+   .grid-2/3/4 → responsive column grids
+──────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.section {
+  padding: var(--space-2xl) 0;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ─── NAVBAR ──────────────────────────────────
+   Always dark background.
+   Sticky — stays at top when scrolling.
+──────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-dark);
+  box-shadow: var(--shadow-nav);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.navbar-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-200);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.navbar-logo span {
+  font-size: 13px;
+  color: var(--color-400);
+  font-weight: 400;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+.navbar-links a {
+  color: var(--color-300);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.navbar-links a:hover,
+.navbar-links a.active {
+  color: var(--color-200);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* ─── LANGUAGE TOGGLE ─────────────────────────
+   Switches between EN and বাং.
+   lang.js sets html[lang] and updates active class.
+──────────────────────────────────────────── */
+.lang-toggle {
+  display: flex;
+  border: 1px solid var(--color-600);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.lang-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-300);
+  transition: all var(--transition);
+  font-family: var(--font-en);
+}
+
+.lang-btn.active {
+  background: var(--color-700);
+  color: var(--color-200);
+}
+
+/* ─── BUTTONS ─────────────────────────────────
+   .btn           → base class, always required
+   .btn-primary   → main CTA (dark green)
+   .btn-secondary → secondary action (light green bg)
+   .btn-outline   → ghost button
+   .btn-accent    → gold, for rewards and points
+   .btn-danger    → destructive action
+   .btn-sm / .btn-lg → size variants
+──────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+  background: var(--color-700);
+  color: var(--color-200);
+}
+.btn-primary:hover { background: var(--color-600); color: var(--color-200); }
+
+.btn-secondary {
+  background: var(--color-50);
+  color: var(--color-700);
+  border: 1px solid var(--border-mid);
+}
+.btn-secondary:hover { background: var(--color-100); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-700);
+  border: 1.5px solid var(--color-700);
+}
+.btn-outline:hover { background: var(--color-50); }
+
+.btn-accent {
+  background: var(--accent-600);
+  color: var(--color-900);
+}
+.btn-accent:hover { background: var(--accent-400); }
+
+.btn-danger {
+  background: var(--error-light);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+.btn-danger:hover { background: var(--error); color: white; }
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 16px;
+  border-radius: var(--radius-md);
+}
+
+.btn-full { width: 100%; }
+
+/* ─── CARDS ───────────────────────────────────
+   White background lifts off the mint page bg.
+──────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(9, 20, 19, 0.1);
+}
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: var(--space-md);
+}
+
+/* ─── BADGES ──────────────────────────────────
+   Case status badges — color coded by meaning.
+──────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-draft     { background: var(--gray-50);   color: var(--gray-600); }
+.badge-submitted { background: var(--color-50);  color: var(--color-700); }
+.badge-review    { background: var(--color-100); color: var(--color-700); }
+.badge-lawyer    { background: var(--accent-50); color: var(--accent-800); }
+.badge-court     { background: var(--color-800); color: var(--color-200); }
+.badge-resolved  { background: var(--color-50);  color: var(--color-600); }
+.badge-closed    { background: var(--gray-50);   color: var(--gray-600); }
+
+/* ─── FORMS ───────────────────────────────────
+   Consistent input styling across all pages.
+──────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-500);
+  box-shadow: 0 0 0 3px var(--color-50);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--error);
+}
+
+/* ─── STAT CARDS ──────────────────────────────
+   Dashboard summary numbers.
+──────────────────────────────────────────── */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-700);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ─── ALERTS ──────────────────────────────────
+   Inline feedback messages.
+──────────────────────────────────────────── */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  border-left: 3px solid;
+}
+
+.alert-success {
+  background: var(--color-50);
+  color: var(--color-700);
+  border-color: var(--color-500);
+}
+
+.alert-error {
+  background: var(--error-light);
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.alert-warning {
+  background: var(--accent-50);
+  color: var(--accent-800);
+  border-color: var(--accent-600);
+}
+
+/* ─── DIVIDER ─────────────────────────────────*/
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: var(--space-lg) 0;
+}
+
+/* ─── UTILITIES ───────────────────────────────
+   Small helper classes used inline.
+──────────────────────────────────────────── */
+.text-center   { text-align: center; }
+.text-right    { text-align: right; }
+.text-muted    { color: var(--text-muted); }
+.text-secondary{ color: var(--text-secondary); }
+.text-accent   { color: var(--accent-600); }
+.text-error    { color: var(--error); }
+.font-bold     { font-weight: 700; }
+.font-medium   { font-weight: 500; }
+
+.flex          { display: flex; }
+.flex-center   { display: flex; align-items: center; justify-content: center; }
+.flex-between  { display: flex; align-items: center; justify-content: space-between; }
+.gap-sm        { gap: var(--space-sm); }
+.gap-md        { gap: var(--space-md); }
+.gap-lg        { gap: var(--space-lg); }
+
+.mt-sm  { margin-top: var(--space-sm); }
+.mt-md  { margin-top: var(--space-md); }
+.mt-lg  { margin-top: var(--space-lg); }
+.mb-sm  { margin-bottom: var(--space-sm); }
+.mb-md  { margin-bottom: var(--space-md); }
+.mb-lg  { margin-bottom: var(--space-lg); }
+
+.hidden { display: none; }
+
+/* ─── RESPONSIVE ──────────────────────────────
+   Mobile first. Navbar collapses on small screens.
+──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-inner {
+    height: 56px;
+  }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+
+  .section {
+    padding: var(--space-xl) 0;
+  }
+
+  h1 { font-size: 28px; }
+  h2 { font-size: 22px; }
+}

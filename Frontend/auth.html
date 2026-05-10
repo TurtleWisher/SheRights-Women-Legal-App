@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SheRights — Sign In</title>
+
+  <!-- Global design system -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Tabler icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    /* ── AUTH PAGE SPECIFIC STYLES ────────────────
+       These only apply to auth.html.
+       Everything reusable is already in style.css.
+    ──────────────────────────────────────────── */
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      /* Left panel: branding. Right panel: form.
+         On mobile, left panel hides and form takes full width */
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LEFT PANEL — Dark branding side ───────── */
+    .auth-left {
+      background: var(--color-900);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--space-xl);
+      min-height: 100vh;
+    }
+
+    .auth-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-200);
+      text-decoration: none;
+    }
+
+    .auth-logo span {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--color-400);
+      margin-top: 2px;
+    }
+
+    .auth-tagline {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-tagline h1 {
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 700;
+      color: var(--color-200);
+      line-height: 1.2;
+      margin-bottom: var(--space-md);
+    }
+
+    .auth-tagline p {
+      font-size: 15px;
+      color: var(--color-400);
+      line-height: 1.7;
+      max-width: 380px;
+    }
+
+    .auth-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .auth-feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-800);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-300);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .auth-feature-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-200);
+    }
+
+    .auth-feature-text p {
+      font-size: 12px;
+      color: var(--color-400);
+    }
+
+    /* ── RIGHT PANEL — Form side ────────────────── */
+    .auth-right {
+      background: var(--bg-page);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: var(--space-xl);
+      min-height: 100vh;
+    }
+
+    .auth-form-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* ── TAB SWITCHER — Login vs Register ───────── */
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .auth-tab.active {
+      background: var(--color-700);
+      color: var(--color-200);
+    }
+
+    /* ── FORM PANELS ─────────────────────────────── */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+
+    .auth-panel h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .auth-panel .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-lg);
+    }
+
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    /* Two fields side by side on wider screens */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+
+    /* Input with icon inside */
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-400);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .input-wrapper .form-input {
+      padding-left: 40px;
+    }
+
+    /* Role selector cards */
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    .role-card {
+      border: 1.5px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      background: var(--bg-card);
+      text-align: center;
+    }
+
+    .role-card:hover {
+      border-color: var(--color-500);
+      background: var(--color-50);
+    }
+
+    .role-card.selected {
+      border-color: var(--color-700);
+      background: var(--color-50);
+    }
+
+    .role-card i {
+      font-size: 28px;
+      color: var(--color-500);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .role-card h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .role-card p {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Hidden input that stores the selected role value */
+    #selected-role { display: none; }
+
+    /* Fields that only show for professionals */
+    .professional-fields { display: none; }
+    .professional-fields.visible { display: contents; }
+
+    /* ── ERROR/SUCCESS ALERTS ────────────────────── */
+    .auth-alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: var(--space-md);
+      display: none;
+      border-left: 3px solid;
+    }
+
+    .auth-alert.visible { display: block; }
+
+    .auth-alert.error {
+      background: var(--error-light);
+      color: var(--error);
+      border-color: var(--error);
+    }
+
+    .auth-alert.success {
+      background: var(--color-50);
+      color: var(--color-700);
+      border-color: var(--color-500);
+    }
+
+    /* ── LANGUAGE TOGGLE (auth page version) ──────── */
+    .auth-lang {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: var(--space-lg);
+    }
+
+    /* ── MOBILE ──────────────────────────────────── */
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { padding: var(--space-lg) var(--space-md); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       LEFT PANEL — Branding
+  ═══════════════════════════════════════════ -->
+  <div class="auth-left">
+
+    <a href="index.html" class="auth-logo">
+      SheRights
+      <span data-key="auth-logo-sub">Powered by justice. Built for you.</span>
+    </a>
+
+    <div class="auth-tagline">
+      <h1 data-key="auth-headline">Know Your Rights.<br/>Stand Your Ground.</h1>
+      <p data-key="auth-subheadline">
+        SheRights gives every woman in Bangladesh the tools
+        to fight back — legally, safely, and confidently.
+      </p>
+    </div>
+
+    <div class="auth-features">
+      <div class="auth-feature">
+        <div class="auth-feature-icon">
+          <i class="ti ti-file-description" aria-hidden="true"></i>
+        </div>
+        <div class="auth-feature-text">
+          <h4 data-key="feat-1-title">File Cases Securely</h4>
+          <p data-key="feat-1-desc">Track every step of your legal journey</p>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="auth-feature-icon">
+          <i class="ti ti-book" aria-hidden="true"></i>
+        </div>
+        <div class="auth-feature-text">
+          <h4 data-key="feat-2-title">Learn Through Comics</h4>
+          <p data-key="feat-2-desc">Earn points while learning your rights</p>
+        </div>
+      </div>
+      <div class="auth-feature">
+        <div class="auth-feature-icon">
+          <i class="ti ti-message-circle" aria-hidden="true"></i>
+        </div>
+        <div class="auth-feature-text">
+          <h4 data-key="feat-3-title">24/7 Legal Help</h4>
+          <p data-key="feat-3-desc">AI bot or real lawyer, always available</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       RIGHT PANEL — Forms
+  ═══════════════════════════════════════════ -->
+  <div class="auth-right">
+    <div class="auth-form-container">
+
+      <!-- Language toggle -->
+      <div class="auth-lang">
+        <div class="lang-toggle">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="bn">বাং</button>
+        </div>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+          <span data-key="tab-login">Sign In</span>
+        </button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
+          <span data-key="tab-register">Create Account</span>
+        </button>
+      </div>
+
+      <!-- ── LOGIN PANEL ───────────────────────── -->
+      <div class="auth-panel active" id="panel-login">
+        <h2 data-key="login-title">Welcome back</h2>
+        <p class="subtitle" data-key="login-subtitle">
+          Sign in with your phone number and PIN
+        </p>
+
+        <div class="auth-alert error" id="login-error"></div>
+        <div class="auth-alert success" id="login-success"></div>
+
+        <div class="form-stack">
+          <div class="form-group">
+            <label class="form-label" data-key="label-phone">Phone Number</label>
+            <div class="input-wrapper">
+              <i class="ti ti-phone" aria-hidden="true"></i>
+              <input
+                class="form-input"
+                type="tel"
+                id="login-phone"
+                placeholder="+8801711111111"
+                autocomplete="tel"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-key="label-password">PIN / Password</label>
+            <div class="input-wrapper">
+              <i class="ti ti-lock" aria-hidden="true"></i>
+              <input
+                class="form-input"
+                type="password"
+                id="login-password"
+                placeholder="Enter your PIN"
+                autocomplete="current-password"
+              />
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="login-btn" onclick="handleLogin()">
+            <i class="ti ti-login" aria-hidden="true"></i>
+            <span data-key="btn-login">Sign In</span>
+          </button>
+
+          <p class="text-center text-muted" style="font-size:13px;">
+            <span data-key="no-account">Don't have an account?</span>
+            <a href="#" onclick="switchTab('register')" data-key="go-register">
+              Create one free
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ── REGISTER PANEL ────────────────────── -->
+      <div class="auth-panel" id="panel-register">
+        <h2 data-key="register-title">Join SheRights</h2>
+        <p class="subtitle" data-key="register-subtitle">
+          Create your free account — no email needed
+        </p>
+
+        <div class="auth-alert error" id="register-error"></div>
+        <div class="auth-alert success" id="register-success"></div>
+
+        <div class="form-stack">
+
+          <!-- Who are you joining as? -->
+          <div class="form-group">
+            <label class="form-label" data-key="label-role">I am joining as</label>
+            <div class="role-selector">
+              <div class="role-card selected" onclick="selectRole('citizen', this)">
+                <i class="ti ti-user" aria-hidden="true"></i>
+                <h4 data-key="role-citizen">Citizen</h4>
+                <p data-key="role-citizen-desc">I need legal help</p>
+              </div>
+              <div class="role-card" onclick="selectRole('lawyer', this)">
+                <i class="ti ti-briefcase" aria-hidden="true"></i>
+                <h4 data-key="role-lawyer">Legal Expert</h4>
+                <p data-key="role-lawyer-desc">I provide legal help</p>
+              </div>
+            </div>
+            <input type="hidden" id="selected-role" value="citizen" />
+          </div>
+
+          <!-- Common fields -->
+          <div class="form-group">
+            <label class="form-label" data-key="label-fullname">Full Name</label>
+            <div class="input-wrapper">
+              <i class="ti ti-user" aria-hidden="true"></i>
+              <input
+                class="form-input"
+                type="text"
+                id="reg-name"
+                placeholder="Your full name"
+                autocomplete="name"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" data-key="label-phone">Phone</label>
+              <div class="input-wrapper">
+                <i class="ti ti-phone" aria-hidden="true"></i>
+                <input
+                  class="form-input"
+                  type="tel"
+                  id="reg-phone"
+                  placeholder="+880..."
+                  autocomplete="tel"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-key="label-dob">Date of Birth</label>
+              <input
+                class="form-input"
+                type="date"
+                id="reg-dob"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-key="label-password">Create PIN</label>
+            <div class="input-wrapper">
+              <i class="ti ti-lock" aria-hidden="true"></i>
+              <input
+                class="form-input"
+                type="password"
+                id="reg-password"
+                placeholder="Minimum 4 characters"
+                autocomplete="new-password"
+              />
+            </div>
+          </div>
+
+          <!-- Location fields — citizen only -->
+          <div class="form-row citizen-fields">
+            <div class="form-group">
+              <label class="form-label" data-key="label-division">Division</label>
+              <select class="form-select" id="reg-division">
+                <option value="">Select division</option>
+                <option value="Dhaka">Dhaka</option>
+                <option value="Chittagong">Chittagong</option>
+                <option value="Rajshahi">Rajshahi</option>
+                <option value="Khulna">Khulna</option>
+                <option value="Barisal">Barisal</option>
+                <option value="Sylhet">Sylhet</option>
+                <option value="Rangpur">Rangpur</option>
+                <option value="Mymensingh">Mymensingh</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-key="label-district">District</label>
+              <input
+                class="form-input"
+                type="text"
+                id="reg-district"
+                placeholder="Your district"
+              />
+            </div>
+          </div>
+
+          <!-- Professional fields — lawyer/consultant only -->
+          <div class="professional-fields" id="professional-fields">
+            <div class="form-group">
+              <label class="form-label" data-key="label-bar">Bar Registration Number</label>
+              <div class="input-wrapper">
+                <i class="ti ti-id-badge" aria-hidden="true"></i>
+                <input
+                  class="form-input"
+                  type="text"
+                  id="reg-bar"
+                  placeholder="Official bar registration number"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-key="label-expertise">Area of Expertise</label>
+              <select class="form-select" id="reg-expertise">
+                <option value="">Select expertise</option>
+                <option>Family Law</option>
+                <option>Workplace Harassment</option>
+                <option>Domestic Violence</option>
+                <option>Land & Property</option>
+                <option>Cybercrime</option>
+                <option>Human Rights</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="register-btn" onclick="handleRegister()">
+            <i class="ti ti-user-plus" aria-hidden="true"></i>
+            <span data-key="btn-register">Create My Account</span>
+          </button>
+
+          <p class="text-center text-muted" style="font-size:13px;">
+            <span data-key="have-account">Already have an account?</span>
+            <a href="#" onclick="switchTab('login')" data-key="go-login">Sign in</a>
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Language system -->
+  <script src="js/lang.js"></script>
+
+  <script>
+    // Add Bangla translations specific to this page
+    // We extend the translations object from lang.js
+    Object.assign(translations.en, {
+      'auth-logo-sub':      'Powered by justice. Built for you.',
+      'auth-headline':      'Know Your Rights. Stand Your Ground.',
+      'auth-subheadline':   'SheRights gives every woman in Bangladesh the tools to fight back — legally, safely, and confidently.',
+      'feat-1-title':       'File Cases Securely',
+      'feat-1-desc':        'Track every step of your legal journey',
+      'feat-2-title':       'Learn Through Comics',
+      'feat-2-desc':        'Earn points while learning your rights',
+      'feat-3-title':       '24/7 Legal Help',
+      'feat-3-desc':        'AI bot or real lawyer, always available',
+      'tab-login':          'Sign In',
+      'tab-register':       'Create Account',
+      'login-title':        'Welcome back',
+      'login-subtitle':     'Sign in with your phone number and PIN',
+      'register-title':     'Join SheRights',
+      'register-subtitle':  'Create your free account — no email needed',
+      'label-phone':        'Phone Number',
+      'label-password':     'PIN / Password',
+      'label-fullname':     'Full Name',
+      'label-dob':          'Date of Birth',
+      'label-division':     'Division',
+      'label-district':     'District',
+      'label-role':         'I am joining as',
+      'role-citizen':       'Citizen',
+      'role-citizen-desc':  'I need legal help',
+      'role-lawyer':        'Legal Expert',
+      'role-lawyer-desc':   'I provide legal help',
+      'label-bar':          'Bar Registration Number',
+      'label-expertise':    'Area of Expertise',
+      'btn-login':          'Sign In',
+      'btn-register':       'Create My Account',
+      'no-account':         "Don't have an account?",
+      'go-register':        'Create one free',
+      'have-account':       'Already have an account?',
+      'go-login':           'Sign in',
+    });
+
+    Object.assign(translations.bn, {
+      'auth-logo-sub':      'ন্যায়বিচারের শক্তিতে। আপনার জন্য নির্মিত।',
+      'auth-headline':      'আপনার অধিকার জানুন। দৃঢ়ভাবে দাঁড়ান।',
+      'auth-subheadline':   'শিরাইটস বাংলাদেশের প্রতিটি নারীকে আইনিভাবে, নিরাপদে এবং আত্মবিশ্বাসের সাথে লড়াই করার হাতিয়ার দেয়।',
+      'feat-1-title':       'নিরাপদে মামলা দায়ের করুন',
+      'feat-1-desc':        'আপনার আইনি যাত্রার প্রতিটি পদক্ষেপ অনুসরণ করুন',
+      'feat-2-title':       'কমিকসের মাধ্যমে শিখুন',
+      'feat-2-desc':        'আপনার অধিকার শিখতে শিখতে পয়েন্ট অর্জন করুন',
+      'feat-3-title':       '২৪/৭ আইনি সহায়তা',
+      'feat-3-desc':        'এআই বট বা আসল আইনজীবী, সবসময় উপলব্ধ',
+      'tab-login':          'সাইন ইন',
+      'tab-register':       'অ্যাকাউন্ট তৈরি করুন',
+      'login-title':        'আবার স্বাগতম',
+      'login-subtitle':     'আপনার ফোন নম্বর এবং পিন দিয়ে সাইন ইন করুন',
+      'register-title':     'শিরাইটসে যোগ দিন',
+      'register-subtitle':  'বিনামূল্যে অ্যাকাউন্ট তৈরি করুন — ইমেইল লাগবে না',
+      'label-phone':        'ফোন নম্বর',
+      'label-password':     'পিন / পাসওয়ার্ড',
+      'label-fullname':     'পূর্ণ নাম',
+      'label-dob':          'জন্ম তারিখ',
+      'label-division':     'বিভাগ',
+      'label-district':     'জেলা',
+      'label-role':         'আমি যোগ দিচ্ছি',
+      'role-citizen':       'নাগরিক',
+      'role-citizen-desc':  'আমার আইনি সাহায্য দরকার',
+      'role-lawyer':        'আইনি বিশেষজ্ঞ',
+      'role-lawyer-desc':   'আমি আইনি সাহায্য প্রদান করি',
+      'label-bar':          'বার রেজিস্ট্রেশন নম্বর',
+      'label-expertise':    'দক্ষতার ক্ষেত্র',
+      'btn-login':          'সাইন ইন করুন',
+      'btn-register':       'আমার অ্যাকাউন্ট তৈরি করুন',
+      'no-account':         'অ্যাকাউন্ট নেই?',
+      'go-register':        'বিনামূল্যে তৈরি করুন',
+      'have-account':       'ইতিমধ্যে অ্যাকাউন্ট আছে?',
+      'go-login':           'সাইন ইন করুন',
+    });
+
+    // ── TAB SWITCHER ────────────────────────────
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      document.getElementById(`panel-${tab}`).classList.add('active');
+    }
+
+    // ── ROLE SELECTOR ────────────────────────────
+    // Clicking a role card selects it visually
+    // and shows/hides the relevant fields
+    function selectRole(role, el) {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('selected-role').value = role;
+
+      const profFields = document.getElementById('professional-fields');
+      const citFields  = document.querySelectorAll('.citizen-fields');
+
+      if (role === 'lawyer' || role === 'consultant') {
+        profFields.classList.add('visible');
+        citFields.forEach(f => f.style.display = 'none');
+      } else {
+        profFields.classList.remove('visible');
+        citFields.forEach(f => f.style.display = '');
+      }
+    }
+
+    // ── SHOW ALERT ───────────────────────────────
+    function showAlert(id, message, type) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = `auth-alert ${type} visible`;
+    }
+
+    function hideAlerts(...ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'auth-alert';
+      });
+    }
+
+    // ── LOADING STATE ────────────────────────────
+    // Disables the button and shows "Please wait..."
+    // while the API request is in progress
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.style.opacity = loading ? '0.7' : '1';
+    }
+
+    // ── LOGIN HANDLER ────────────────────────────
+    async function handleLogin() {
+      hideAlerts('login-error', 'login-success');
+
+      const phone    = document.getElementById('login-phone').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!phone || !password) {
+        return showAlert('login-error', 'Please enter your phone number and PIN.', 'error');
+      }
+
+      setLoading('login-btn', true);
+
+      try {
+        const res = await Auth.login({ phone_number: phone, password });
+
+        if (!res.ok) {
+          return showAlert('login-error', res.data.message || 'Login failed.', 'error');
+        }
+
+        // Save token and user info
+        saveToken(res.data.data.token);
+        localStorage.setItem('sr-user', JSON.stringify(res.data.data.user));
+
+        showAlert('login-success', 'Login successful! Redirecting...', 'success');
+
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 800);
+
+      } catch (err) {
+        showAlert('login-error', 'Something went wrong. Please try again.', 'error');
+      } finally {
+        setLoading('login-btn', false);
+      }
+    }
+
+    // ── REGISTER HANDLER ─────────────────────────
+    async function handleRegister() {
+      hideAlerts('register-error', 'register-success');
+
+      const role     = document.getElementById('selected-role').value;
+      const name     = document.getElementById('reg-name').value.trim();
+      const phone    = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const dob      = document.getElementById('reg-dob').value;
+
+      if (!name || !phone || !password) {
+        return showAlert('register-error', 'Please fill in all required fields.', 'error');
+      }
+
+      if (password.length < 4) {
+        return showAlert('register-error', 'PIN must be at least 4 characters.', 'error');
+      }
+
+      // Build the payload based on role
+      const payload = { role, full_name: name, phone_number: phone, password };
+
+      if (role === 'citizen') {
+        payload.date_of_birth = dob || null;
+        payload.division      = document.getElementById('reg-division').value;
+        payload.district      = document.getElementById('reg-district').value;
+        payload.is_rural      = false;
+      }
+
+      if (role === 'lawyer' || role === 'consultant') {
+        payload.bar_registration_number = document.getElementById('reg-bar').value;
+        payload.expertise_area          = document.getElementById('reg-expertise').value;
+      }
+
+      setLoading('register-btn', true);
+
+      try {
+        const res = await Auth.register(payload);
+
+        if (!res.ok) {
+          return showAlert('register-error', res.data.message || 'Registration failed.', 'error');
+        }
+
+        showAlert('register-success', 'Account created! Please sign in.', 'success');
+
+        // Switch to login tab after success
+        setTimeout(() => switchTab('login'), 1200);
+
+      } catch (err) {
+        showAlert('register-error', 'Something went wrong. Please try again.', 'error');
+      } finally {
+        setLoading('register-btn', false);
+      }
+    }
+
+    // Allow pressing Enter to submit
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const loginActive = document.getElementById('panel-login').classList.contains('active');
+        loginActive ? handleLogin() : handleRegister();
+      }
+    });
+  </script>
+
+  <!-- API functions -->
+  <script src="js/api.js"></script>
+
+</body>
+</html>
