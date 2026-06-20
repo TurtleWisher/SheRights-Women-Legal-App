@@ -134,10 +134,33 @@ io.on('connection', (socket) => {
   });
 });
 
+// ─────────────────────────────────────────
+// SERVE THE FRONTEND
+// Express hands out static files (html, css, js)
+// from the Frontend folder for any request that
+// isn't an API call. This lets one server do both jobs.
+// ─────────────────────────────────────────
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, '../Frontend')));
+
+// Any route that doesn't match an API endpoint
+// falls back to serving index.html (or a specific page)
+// This is needed so refreshing dashboard.html doesn't 404
+// Catch-all for the frontend — runs only if no earlier route matched
+// app.use() with no path argument matches every request that reaches it
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ status: 'error', message: 'Route not found' });
+  }
+  res.sendFile(path.join(__dirname, '../Frontend', 'auth.html'));
+});
+
 // --- START SERVER ---
 // Notice: server.listen not app.listen
 // We listen on the HTTP server now, not just Express
 // This is what makes Socket.io work alongside Express
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`SheRights API is operational on port ${PORT}`);
