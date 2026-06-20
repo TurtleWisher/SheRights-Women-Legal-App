@@ -489,7 +489,9 @@
   // This opens a permanent live connection to our backend.
   // Unlike fetch(), this connection stays open the whole time
   // the chat page is open — that's what makes it real-time.
-  const socket = io('http://localhost:5000');
+  // Connects to whatever domain is currently serving this page.
+// Works automatically both locally and in production.
+const socket = io();
 
   socket.on('connect', () => {
     console.log('Connected to chat server:', socket.id);
