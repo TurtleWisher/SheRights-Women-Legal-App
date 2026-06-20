@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SheRights — Learn Your Rights</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <style>
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--color-900);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-200);
+      text-decoration: none;
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-800);
+    }
+
+    .sidebar-logo span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--color-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--color-300);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link i { font-size: 20px; flex-shrink: 0; }
+    .sidebar-link:hover { background: var(--color-800); color: var(--color-200); }
+    .sidebar-link.active { background: var(--color-700); color: var(--color-200); }
+
+    .sidebar-bottom {
+      border-top: 1px solid var(--color-800);
+      padding-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: var(--color-700);
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-200);
+      font-size: 16px; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* Main */
+    .main-content { padding: var(--space-xl); }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+    }
+
+    /* Points banner */
+    .points-banner {
+      background: var(--color-900);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+    }
+
+    .points-banner-left h3 {
+      font-size: 14px;
+      color: var(--color-400);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .points-banner-left .big-num {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--accent-400);
+      line-height: 1;
+    }
+
+    .points-banner-left p {
+      font-size: 12px;
+      color: var(--color-400);
+      margin-top: 4px;
+    }
+
+    .points-banner-right {
+      text-align: right;
+    }
+
+    .points-banner-right p {
+      font-size: 13px;
+      color: var(--color-300);
+      margin-bottom: 6px;
+    }
+
+    .level-bar-wrap {
+      width: 200px;
+      height: 6px;
+      background: var(--color-800);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .level-bar {
+      height: 100%;
+      background: var(--accent-400);
+      border-radius: var(--radius-full);
+      transition: width 1s ease;
+    }
+
+    /* Filter tabs */
+    .filter-row {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-full);
+      background: var(--bg-card);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+
+    .filter-btn:hover { border-color: var(--color-500); color: var(--color-700); }
+    .filter-btn.active {
+      background: var(--color-700);
+      border-color: var(--color-700);
+      color: var(--color-200);
+    }
+
+    /* Modules grid */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .module-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(9,20,19,0.1);
+      border-color: var(--color-300);
+    }
+
+    .module-card.completed {
+      border-color: var(--color-300);
+    }
+
+    /* Colored top strip based on content type */
+    .module-strip {
+      height: 6px;
+      width: 100%;
+    }
+
+    .module-body { padding: var(--space-lg); }
+
+    .module-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: var(--space-md);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .module-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .module-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border-light);
+    }
+
+    .module-points {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-600);
+    }
+
+    .module-status {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Progress ring */
+    .progress-ring {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Quiz modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9,20,19,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform var(--transition);
+    }
+
+    .modal-overlay.visible .modal { transform: translateY(0); }
+
+    /* Module view (reading the comic/content) */
+    .module-view-header {
+      background: var(--color-900);
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .module-view-header h2 {
+      font-size: 18px;
+      color: var(--color-200);
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 36px; height: 36px;
+      background: var(--color-800);
+      border: none; border-radius: var(--radius-sm);
+      cursor: pointer; font-size: 20px;
+      color: var(--color-300);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .module-view-body { padding: var(--space-xl); }
+
+    /* Content placeholder */
+    .content-placeholder {
+      background: var(--color-50);
+      border: 2px dashed var(--border-mid);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl);
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .content-placeholder i {
+      font-size: 48px;
+      color: var(--color-400);
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+
+    .content-placeholder p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Quiz section */
+    .quiz-section { margin-top: var(--space-xl); }
+
+    .quiz-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: var(--space-lg);
+    }
+
+    .question-card {
+      background: var(--bg-page);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .question-num {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 12px var(--space-md);
+      border: 1.5px solid var(--border-mid);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      font-size: 14px;
+      font-family: var(--font);
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all var(--transition);
+    }
+
+    .option-btn:hover { border-color: var(--color-500); background: var(--color-50); }
+
+    .option-btn.selected {
+      border-color: var(--color-700);
+      background: var(--color-50);
+      color: var(--color-700);
+      font-weight: 500;
+    }
+
+    .option-btn.correct {
+      border-color: var(--success);
+      background: #E1F5EE;
+      color: var(--success);
+    }
+
+    .option-btn.wrong {
+      border-color: var(--error);
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    /* Result screen */
+    .result-screen {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-xl);
+    }
+
+    .result-icon {
+      font-size: 64px;
+      margin-bottom: var(--space-lg);
+      display: block;
+    }
+
+    .result-screen h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .result-screen p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xl);
+    }
+
+    .result-points {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--accent-600);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-content { padding: var(--space-lg) var(--space-md); }
+      .points-banner { flex-direction: column; gap: var(--space-md); }
+      .level-bar-wrap { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      SheRights <span>শিরাইটস</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+      </a>
+      <a href="cases.html" class="sidebar-link">
+        <i class="ti ti-file-description"></i><span>My Cases</span>
+      </a>
+      <a href="learn.html" class="sidebar-link active">
+        <i class="ti ti-book"></i><span>Learn Rights</span>
+      </a>
+      <a href="chat.html" class="sidebar-link">
+        <i class="ti ti-message-circle"></i><span>Legal Help</span>
+      </a>
+      <a href="report.html" class="sidebar-link">
+        <i class="ti ti-map-pin"></i><span>Report Issue</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div style="font-size:13px;color:var(--color-200);font-weight:600;"
+               id="sidebar-username"></div>
+          <div style="font-size:11px;color:var(--color-400);"
+               id="sidebar-role"></div>
+        </div>
+      </div>
+      <div class="lang-toggle" style="width:100%;">
+        <button class="lang-btn active" data-lang="en" style="flex:1;">EN</button>
+        <button class="lang-btn" data-lang="bn" style="flex:1;">বাং</button>
+      </div>
+      <a href="#" class="sidebar-link" onclick="handleLogout()">
+        <i class="ti ti-logout"></i><span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 data-key="page-title">Learn Your Rights</h1>
+        <p style="color:var(--text-secondary);font-size:14px;margin-top:4px;"
+           data-key="page-subtitle">
+          Read comics, complete quizzes, and earn points
+        </p>
+      </div>
+    </div>
+
+    <!-- Points banner -->
+    <div class="points-banner">
+      <div class="points-banner-left">
+        <h3 data-key="points-label">YOUR TOTAL POINTS</h3>
+        <div class="big-num" id="total-points">0</div>
+        <p id="level-text">Level 1</p>
+      </div>
+      <div class="points-banner-right">
+        <p id="next-level-text">500 points to next level</p>
+        <div class="level-bar-wrap">
+          <div class="level-bar" id="level-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content type filter -->
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterModules('All', this)"
+              data-key="filter-all">All</button>
+      <button class="filter-btn" onclick="filterModules('Comic', this)"
+              data-key="filter-comic">Comics</button>
+      <button class="filter-btn" onclick="filterModules('Story', this)"
+              data-key="filter-story">Stories</button>
+      <button class="filter-btn" onclick="filterModules('Infographic', this)"
+              data-key="filter-info">Infographics</button>
+      <button class="filter-btn" onclick="filterModules('Video', this)"
+              data-key="filter-video">Videos</button>
+    </div>
+
+    <!-- Modules grid -->
+    <div class="modules-grid" id="modules-grid">
+      <div class="skeleton" style="height:220px;border-radius:16px;"></div>
+      <div class="skeleton" style="height:220px;border-radius:16px;opacity:.7;"></div>
+      <div class="skeleton" style="height:220px;border-radius:16px;opacity:.4;"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODULE MODAL (content + quiz combined)
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <!-- Filled dynamically by openModule() -->
+  </div>
+</div>
+
+<script src="js/lang.js"></script>
+<script src="js/api.js"></script>
+<script>
+
+  Object.assign(translations.en, {
+    'page-title':     'Learn Your Rights',
+    'page-subtitle':  'Read comics, complete quizzes, and earn points',
+    'points-label':   'YOUR TOTAL POINTS',
+    'filter-all':     'All',
+    'filter-comic':   'Comics',
+    'filter-story':   'Stories',
+    'filter-info':    'Infographics',
+    'filter-video':   'Videos',
+  });
+
+  Object.assign(translations.bn, {
+    'page-title':     'আপনার অধিকার শিখুন',
+    'page-subtitle':  'কমিকস পড়ুন, কুইজ সম্পন্ন করুন এবং পয়েন্ট অর্জন করুন',
+    'points-label':   'আপনার মোট পয়েন্ট',
+    'filter-all':     'সব',
+    'filter-comic':   'কমিকস',
+    'filter-story':   'গল্প',
+    'filter-info':    'ইনফোগ্রাফিক',
+    'filter-video':   'ভিডিও',
+  });
+
+  // Guard
+  const token = localStorage.getItem('sr-token');
+  const user  = JSON.parse(localStorage.getItem('sr-user') || 'null');
+  if (!token || !user) window.location.href = 'auth.html';
+
+  document.getElementById('sidebar-username').textContent = user.phone_number;
+  document.getElementById('sidebar-role').textContent     = user.role;
+  document.getElementById('user-avatar').textContent =
+    (user.phone_number || 'U')[0].toUpperCase();
+
+  // State
+  let allModules   = [];
+  let currentModule = null;
+  let selectedAnswers = {};
+
+  // Content type config
+  const typeConfig = {
+    'Comic':       { color: '#285A48', bg: '#EBF8F2', icon: 'ti-book-2' },
+    'Story':       { color: '#854F0B', bg: '#FDF6E3', icon: 'ti-writing' },
+    'Infographic': { color: '#1A5276', bg: '#D6EAF8', icon: 'ti-chart-bar' },
+    'Video':       { color: '#6C3483', bg: '#F4ECF7', icon: 'ti-video' },
+  };
+
+  // ── LOAD PAGE ─────────────────────────────────
+  async function loadPage() {
+    const [modulesRes, progressRes] = await Promise.all([
+      Learn.getAll(),
+      Learn.myProgress()
+    ]);
+
+    if (progressRes.ok) {
+      const points  = progressRes.data.data.total_points || 0;
+      const level   = Math.floor(points / 500) + 1;
+      const pct     = Math.min(((points % 500) / 500) * 100, 100);
+      const nextLvl = level * 500;
+
+      document.getElementById('total-points').textContent   = points;
+      document.getElementById('level-text').textContent     = `Level ${level}`;
+      document.getElementById('next-level-text').textContent =
+        `${nextLvl - points} points to next level`;
+      document.getElementById('level-bar').style.width = `${pct}%`;
+    }
+
+    if (modulesRes.ok) {
+      allModules = modulesRes.data.data;
+      renderModules(allModules);
+    }
+  }
+
+  // ── RENDER MODULES ────────────────────────────
+  function renderModules(modules) {
+    const grid = document.getElementById('modules-grid');
+
+    if (modules.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:60px;
+                    color:var(--text-muted);">
+          <i class="ti ti-books" style="font-size:48px;display:block;
+             margin-bottom:16px;"></i>
+          <p>No modules available yet. Check back soon!</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = modules.map(m => {
+      const cfg       = typeConfig[m.content_type] || typeConfig['Comic'];
+      const completed = m.user_status === 'Completed';
+      const started   = m.user_status === 'Started';
+
+      return `
+        <div class="module-card ${completed ? 'completed' : ''}"
+             onclick="openModule(${m.module_id})">
+
+          <!-- Color strip at top — different per content type -->
+          <div class="module-strip" style="background:${cfg.color};"></div>
+
+          <div class="module-body">
+
+            <div class="module-type-badge"
+                 style="background:${cfg.bg};color:${cfg.color};">
+              <i class="ti ${cfg.icon}"></i>
+              ${m.content_type}
+            </div>
+
+            <div class="module-title">${m.title}</div>
+
+            <div class="module-footer">
+              <div class="module-points">
+                <i class="ti ti-star"></i>
+                ${m.points_reward} pts
+              </div>
+
+              <div class="module-status">
+                ${completed
+                  ? `<span style="color:var(--success);display:flex;
+                               align-items:center;gap:4px;">
+                       <i class="ti ti-circle-check"></i> Completed
+                     </span>`
+                  : started
+                  ? `<span style="color:var(--color-500);display:flex;
+                               align-items:center;gap:4px;">
+                       <i class="ti ti-loader"></i> In Progress
+                     </span>`
+                  : `<span style="color:var(--text-muted);">
+                       Not started
+                     </span>`}
+              </div>
+            </div>
+
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── FILTER ────────────────────────────────────
+  function filterModules(type, btn) {
+    document.querySelectorAll('.filter-btn')
+      .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const filtered = type === 'All'
+      ? allModules
+      : allModules.filter(m => m.content_type === type);
+
+    renderModules(filtered);
+  }
+
+  // ── OPEN MODULE ───────────────────────────────
+  async function openModule(moduleId) {
+    const overlay = document.getElementById('modal-overlay');
+    const modal   = document.getElementById('modal');
+
+    // Reset state
+    selectedAnswers = {};
+
+    // Show loading
+    modal.innerHTML = `
+      <div class="module-view-header">
+        <h2>Loading...</h2>
+        <button class="modal-close" onclick="closeModal()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="module-view-body">
+        <div class="skeleton" style="height:200px;margin-bottom:16px;"></div>
+        <div class="skeleton" style="height:100px;opacity:.6;"></div>
+      </div>`;
+
+    overlay.classList.add('visible');
+
+    // Mark as started on the backend
+    await Learn.start(moduleId);
+
+    // Fetch full module with quiz
+    const res = await Learn.getOne(moduleId);
+    if (!res.ok) return;
+
+    currentModule = res.data.data;
+    const cfg     = typeConfig[currentModule.content_type] || typeConfig['Comic'];
+
+    // Build the modal content
+    modal.innerHTML = `
+      <div class="module-view-header" style="background:${cfg.color};">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.6);
+                      text-transform:uppercase;letter-spacing:.05em;
+                      margin-bottom:4px;">
+            ${currentModule.content_type}
+          </div>
+          <h2>${currentModule.title}</h2>
+        </div>
+        <button class="modal-close" onclick="closeModal()"
+                style="background:rgba(255,255,255,0.15);color:#fff;">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="module-view-body">
+
+        <!-- Content placeholder -->
+        <div class="content-placeholder">
+          <i class="ti ${cfg.icon}" style="color:${cfg.color};"></i>
+          <p style="font-size:16px;font-weight:600;color:${cfg.color};
+                    margin-bottom:8px;">
+            ${currentModule.title}
+          </p>
+          <p>
+            This is where the ${currentModule.content_type.toLowerCase()} content
+            will be displayed. In the full version, this section will render
+            comic panels, story text, infographic images, or embedded videos
+            from the media URL.
+          </p>
+          ${currentModule.media_url
+            ? `<a href="${currentModule.media_url}" target="_blank"
+                  class="btn btn-secondary btn-sm" style="margin-top:16px;">
+                 <i class="ti ti-external-link"></i> Open Content
+               </a>`
+            : ''}
+        </div>
+
+        <!-- Points reward info -->
+        <div style="display:flex;align-items:center;gap:8px;
+                    padding:12px 16px;background:var(--accent-50);
+                    border-radius:var(--radius-md);margin-bottom:var(--space-xl);
+                    border:1px solid #E8C06B;">
+          <i class="ti ti-star" style="color:var(--accent-600);font-size:20px;"></i>
+          <span style="font-size:14px;color:var(--accent-800);font-weight:500;">
+            Complete the quiz below to earn
+            <strong>${currentModule.points_reward} points</strong>
+          </span>
+        </div>
+
+        <!-- Quiz -->
+        ${currentModule.quiz
+          ? renderQuiz(currentModule.quiz)
+          : `<div style="text-align:center;padding:32px;color:var(--text-muted);">
+               No quiz available for this module.
+             </div>`}
+
+      </div>`;
+  }
+
+  // ── RENDER QUIZ ───────────────────────────────
+  function renderQuiz(quiz) {
+    return `
+      <div class="quiz-section">
+        <h3>${quiz.title}</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:var(--space-lg);">
+          Passing score: ${quiz.passing_score} points
+        </p>
+
+        <div id="questions-container">
+          ${quiz.questions.map((q, i) => `
+            <div class="question-card">
+              <div class="question-num">Question ${i + 1} · ${q.points} pts</div>
+              <div class="question-text">${q.question_text}</div>
+              <div class="options-list">
+                ${q.options.map(opt => `
+                  <button
+                    class="option-btn"
+                    id="opt-${opt.option_id}"
+                    onclick="selectAnswer(${q.question_id}, ${opt.option_id}, this)"
+                  >${opt.option_text}</button>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <button class="btn btn-primary btn-full"
+                id="submit-quiz-btn"
+                style="margin-top:var(--space-lg);"
+                onclick="submitQuiz()">
+          <i class="ti ti-send"></i>
+          Submit Answers
+        </button>
+      </div>`;
+  }
+
+  // ── SELECT ANSWER ─────────────────────────────
+  // When a user clicks an option, highlight it
+  // and store the selection in selectedAnswers
+  function selectAnswer(questionId, optionId, btn) {
+    // Remove selected state from all options in this question
+    const card = btn.closest('.question-card');
+    card.querySelectorAll('.option-btn')
+        .forEach(b => b.classList.remove('selected'));
+
+    // Mark this one as selected
+    btn.classList.add('selected');
+
+    // Store the answer
+    selectedAnswers[questionId] = optionId;
+  }
+
+  // ── SUBMIT QUIZ ───────────────────────────────
+  async function submitQuiz() {
+    const quiz = currentModule.quiz;
+
+    // Check all questions are answered
+    const unanswered = quiz.questions.filter(
+      q => !selectedAnswers[q.question_id]
+    );
+
+    if (unanswered.length > 0) {
+      alert(`Please answer all ${unanswered.length} remaining question(s).`);
+      return;
+    }
+
+    // Build answers array in the format the backend expects
+    const answers = Object.entries(selectedAnswers).map(([qId, optId]) => ({
+      question_id: parseInt(qId),
+      option_id:   parseInt(optId)
+    }));
+
+    const btn = document.getElementById('submit-quiz-btn');
+    btn.disabled    = true;
+    btn.textContent = 'Checking answers...';
+
+    const res = await Learn.submitQuiz(currentModule.module_id, { answers });
+
+    if (!res.ok) {
+      btn.disabled    = false;
+      btn.textContent = 'Submit Answers';
+      alert('Something went wrong. Please try again.');
+      return;
+    }
+
+    const result = res.data.data;
+
+    // Show the result screen inside the modal
+    showResult(result);
+
+    // Reload modules to update completion status
+    loadPage();
+  }
+
+  // ── SHOW RESULT ───────────────────────────────
+  function showResult(result) {
+    const modal = document.getElementById('modal');
+
+    modal.innerHTML = `
+      <div class="result-screen">
+
+        <span class="result-icon">${result.passed ? '🎉' : '💪'}</span>
+
+        <h2>${result.passed ? 'You passed!' : 'Keep trying!'}</h2>
+
+        <p>${result.passed
+          ? 'Congratulations! You have completed this module.'
+          : `You scored ${result.score} out of ${result.passing_score} needed to pass.`}
+        </p>
+
+        ${result.passed
+          ? `<div class="result-points">${result.score}</div>
+             <p style="color:var(--accent-600);font-weight:600;">
+               points earned
+             </p>`
+          : ''}
+
+        <!-- Per-question breakdown -->
+        <div style="text-align:left;margin:var(--space-xl) 0;
+                    border-top:1px solid var(--border-light);
+                    padding-top:var(--space-lg);">
+          <h4 style="margin-bottom:12px;">Your answers:</h4>
+          ${result.results.map((r, i) => `
+            <div style="display:flex;align-items:center;gap:10px;
+                        padding:8px 0;border-bottom:1px solid var(--border-light);">
+              <i class="ti ti-${r.correct ? 'circle-check' : 'circle-x'}"
+                 style="color:${r.correct ? 'var(--success)' : 'var(--error)'};
+                         font-size:20px;flex-shrink:0;"></i>
+              <span style="font-size:13px;">Question ${i + 1} —
+                ${r.correct ? 'Correct' : 'Incorrect'}</span>
+            </div>`).join('')}
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:center;">
+          ${!result.passed
+            ? `<button class="btn btn-outline" onclick="openModule(${currentModule.module_id})">
+                 <i class="ti ti-refresh"></i> Try Again
+               </button>`
+            : ''}
+          <button class="btn btn-primary" onclick="closeModal()">
+            <i class="ti ti-arrow-left"></i>
+            Back to Modules
+          </button>
+        </div>
+
+      </div>`;
+  }
+
+  // ── MODAL CLOSE ───────────────────────────────
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('visible');
+    currentModule   = null;
+    selectedAnswers = {};
+  }
+
+  // Close on overlay click
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  // Logout
+  function handleLogout() {
+    localStorage.removeItem('sr-token');
+    localStorage.removeItem('sr-user');
+    window.location.href = 'auth.html';
+  }
+
+  // Init
+  document.addEventListener('DOMContentLoaded', loadPage);
+</script>
+</body>
+</html>
