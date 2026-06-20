@@ -4,7 +4,9 @@
 // No other file talks to the backend directly.
 // ─────────────────────────────────────────────
 
-const BASE_URL = 'http://localhost:5000/api';
+// Works both locally and in production automatically.
+// The browser fills in the current domain for relative paths.
+const BASE_URL = '/api';
 
 // Retrieves the JWT token stored after login
 // Returns null if the user is not logged in

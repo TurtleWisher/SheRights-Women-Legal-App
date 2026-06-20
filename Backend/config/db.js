@@ -9,6 +9,7 @@ require('dotenv').config();
 // What is the username? What is the password? Which database?
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT || 3306,   
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -19,3 +20,4 @@ const pool = mysql.createPool({
 // We export this pipe so other files can use it
 // Think of it as: we built the pipe, now we make it available to the whole kitchen
 module.exports = pool.promise();
+

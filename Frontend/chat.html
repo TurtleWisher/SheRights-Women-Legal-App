@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SheRights — Legal Help Chat</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+  <!-- Socket.io client — connects to our backend's real-time server -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <style>
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: var(--color-900);
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-200);
+      text-decoration: none;
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--color-800);
+    }
+
+    .sidebar-logo span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--color-400);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--color-300);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+
+    .sidebar-link i { font-size: 20px; flex-shrink: 0; }
+    .sidebar-link:hover { background: var(--color-800); color: var(--color-200); }
+    .sidebar-link.active { background: var(--color-700); color: var(--color-200); }
+
+    .sidebar-bottom {
+      border-top: 1px solid var(--color-800);
+      padding-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      background: var(--color-700);
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-200);
+      font-size: 16px; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* ── CHAT LAYOUT ─────────────────────────────── */
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── SESSIONS PANEL ──────────────────────────── */
+    .sessions-panel {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .sessions-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .sessions-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+    }
+
+    .sessions-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-sm);
+    }
+
+    .session-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-bottom: 2px;
+    }
+
+    .session-item:hover { background: var(--color-50); }
+    .session-item.active { background: var(--color-50); }
+
+    .session-avatar {
+      width: 42px; height: 42px;
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .session-avatar.bot {
+      background: var(--color-100);
+      color: var(--color-700);
+    }
+
+    .session-avatar.human {
+      background: var(--accent-50);
+      color: var(--accent-800);
+    }
+
+    .session-info { flex: 1; min-width: 0; }
+
+    .session-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .session-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .session-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+
+    /* ── NEW CHAT BUTTON ─────────────────────────── */
+    .new-chat-btn {
+      margin: var(--space-md);
+      margin-top: 0;
+    }
+
+    /* ── CHAT WINDOW ─────────────────────────────── */
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--bg-page);
+    }
+
+    .chat-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .chat-header-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .chat-header-info p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .connection-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .connection-dot.offline { background: var(--gray-200); }
+
+    /* ── MESSAGES AREA ───────────────────────────── */
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .message-row {
+      display: flex;
+      gap: var(--space-sm);
+      max-width: 65%;
+    }
+
+    .message-row.own {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-700);
+      color: var(--color-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .message-avatar.bot-avatar { background: var(--accent-600); color: var(--color-900); }
+
+    .message-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+
+    .message-row.own .message-bubble {
+      background: var(--color-700);
+      color: var(--color-200);
+      border-color: var(--color-700);
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: block;
+    }
+
+    .message-row.own .message-time { text-align: right; }
+
+    /* ── BOT WELCOME ─────────────────────────────── */
+    .bot-welcome {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-muted);
+    }
+
+    .bot-welcome i {
+      font-size: 40px;
+      color: var(--color-300);
+      margin-bottom: var(--space-md);
+      display: block;
+    }
+
+    /* ── INPUT AREA ──────────────────────────────── */
+    .chat-input-area {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-light);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-md);
+    }
+
+    .chat-input {
+      flex: 1;
+      border: 1px solid var(--border-mid);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      font-size: 14px;
+      font-family: var(--font);
+      resize: none;
+      max-height: 100px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .chat-input:focus { border-color: var(--color-500); }
+
+    .send-btn {
+      width: 42px; height: 42px;
+      border-radius: var(--radius-full);
+      background: var(--color-700);
+      border: none;
+      color: var(--color-200);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover { background: var(--color-600); }
+    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── EMPTY STATE (no session selected) ───────── */
+    .chat-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-md);
+      color: var(--text-muted);
+      padding: var(--space-xl);
+    }
+
+    .chat-empty i {
+      font-size: 64px;
+      color: var(--color-200);
+    }
+
+    .chat-empty h3 {
+      font-size: 18px;
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .chat-layout { grid-template-columns: 1fr; }
+      .sessions-panel.has-active { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      SheRights <span>শিরাইটস</span>
+    </a>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+      </a>
+      <a href="cases.html" class="sidebar-link">
+        <i class="ti ti-file-description"></i><span>My Cases</span>
+      </a>
+      <a href="learn.html" class="sidebar-link">
+        <i class="ti ti-book"></i><span>Learn Rights</span>
+      </a>
+      <a href="chat.html" class="sidebar-link active">
+        <i class="ti ti-message-circle"></i><span>Legal Help</span>
+      </a>
+      <a href="report.html" class="sidebar-link">
+        <i class="ti ti-map-pin"></i><span>Report Issue</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div>
+          <div style="font-size:13px;color:var(--color-200);font-weight:600;" id="sidebar-username"></div>
+          <div style="font-size:11px;color:var(--color-400);" id="sidebar-role"></div>
+        </div>
+      </div>
+      <div class="lang-toggle" style="width:100%;">
+        <button class="lang-btn active" data-lang="en" style="flex:1;">EN</button>
+        <button class="lang-btn" data-lang="bn" style="flex:1;">বাং</button>
+      </div>
+      <a href="#" class="sidebar-link" onclick="handleLogout()">
+        <i class="ti ti-logout"></i><span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- CHAT LAYOUT -->
+  <div class="chat-layout">
+
+    <!-- SESSIONS LIST -->
+    <div class="sessions-panel" id="sessions-panel">
+      <div class="sessions-header">
+        <h2 data-key="chat-title">Legal Help</h2>
+        <button class="btn btn-primary btn-full" onclick="startNewSession()">
+          <i class="ti ti-plus"></i>
+          <span data-key="btn-new-chat">Start New Chat</span>
+        </button>
+      </div>
+      <div class="sessions-list" id="sessions-list">
+        <div class="skeleton" style="height:64px;margin:8px;border-radius:10px;"></div>
+        <div class="skeleton" style="height:64px;margin:8px;border-radius:10px;opacity:.6;"></div>
+      </div>
+    </div>
+
+    <!-- CHAT WINDOW -->
+    <div class="chat-window" id="chat-window">
+      <div class="chat-empty">
+        <i class="ti ti-message-circle-2"></i>
+        <h3 data-key="empty-title">Select a conversation</h3>
+        <p data-key="empty-desc">
+          Choose an existing chat or start a new one to get legal help 24/7
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/lang.js"></script>
+<script src="js/api.js"></script>
+<script>
+
+  Object.assign(translations.en, {
+    'chat-title':     'Legal Help',
+    'btn-new-chat':   'Start New Chat',
+    'empty-title':    'Select a conversation',
+    'empty-desc':     'Choose an existing chat or start a new one to get legal help 24/7',
+    'bot-welcome':    'Hi! I am the SheRights assistant. How can I help you today?',
+    'no-sessions':    'No conversations yet',
+  });
+
+  Object.assign(translations.bn, {
+    'chat-title':     'আইনি সহায়তা',
+    'btn-new-chat':   'নতুন চ্যাট শুরু করুন',
+    'empty-title':    'একটি কথোপকথন নির্বাচন করুন',
+    'empty-desc':     '২৪/৭ আইনি সহায়তা পেতে একটি বিদ্যমান চ্যাট বেছে নিন বা নতুন শুরু করুন',
+    'bot-welcome':    'হাই! আমি শিরাইটস সহকারী। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?',
+    'no-sessions':    'এখনো কোনো কথোপকথন নেই',
+  });
+
+  // Guard
+  const token = localStorage.getItem('sr-token');
+  const user  = JSON.parse(localStorage.getItem('sr-user') || 'null');
+  if (!token || !user) window.location.href = 'auth.html';
+
+  document.getElementById('sidebar-username').textContent = user.phone_number;
+  document.getElementById('sidebar-role').textContent     = user.role;
+  document.getElementById('user-avatar').textContent =
+    (user.phone_number || 'U')[0].toUpperCase();
+
+  // ── STATE ─────────────────────────────────────
+  let allSessions     = [];
+  let activeSessionId = null;
+
+  // ── CONNECT TO SOCKET.IO ──────────────────────
+  // This opens a permanent live connection to our backend.
+  // Unlike fetch(), this connection stays open the whole time
+  // the chat page is open — that's what makes it real-time.
+  const socket = io('http://localhost:5000');
+
+  socket.on('connect', () => {
+    console.log('Connected to chat server:', socket.id);
+  });
+
+  // Whenever ANY message arrives for the room we've joined,
+  // this fires automatically — no polling, no refreshing.
+  socket.on('receive_message', (message) => {
+    // Only render if it belongs to the currently open session
+    if (message.session_id === activeSessionId) {
+      renderMessage(message);
+      scrollToBottom();
+    }
+    // Refresh session list so "last message" preview updates
+    loadSessions();
+  });
+
+  socket.on('error', (err) => {
+    console.error('Socket error:', err);
+  });
+
+  // ── LOAD SESSIONS ─────────────────────────────
+  async function loadSessions() {
+    const res = await Chat.getSessions();
+    if (!res.ok) return;
+
+    allSessions = res.data.data;
+    renderSessions();
+  }
+
+  function renderSessions() {
+    const list = document.getElementById('sessions-list');
+
+    if (allSessions.length === 0) {
+      list.innerHTML = `
+        <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+          <i class="ti ti-messages" style="font-size:36px;display:block;
+             margin-bottom:12px;"></i>
+          <p data-key="no-sessions" style="font-size:13px;">No conversations yet</p>
+        </div>`;
+      applyLanguage(localStorage.getItem('sr-lang') || 'en');
+      return;
+    }
+
+    list.innerHTML = allSessions.map(s => `
+      <div class="session-item ${s.session_id === activeSessionId ? 'active' : ''}"
+           onclick="openSession(${s.session_id})">
+        <div class="session-avatar ${s.is_bot_session ? 'bot' : 'human'}">
+          <i class="ti ti-${s.is_bot_session ? 'robot' : 'user'}"></i>
+        </div>
+        <div class="session-info">
+          <h4>${s.is_bot_session ? 'SheRights Assistant' : 'Legal Expert'}</h4>
+          <p>${s.last_message || 'No messages yet'}</p>
+        </div>
+        ${s.status === 'Active'
+          ? '<div class="session-status-dot"></div>'
+          : ''}
+      </div>
+    `).join('');
+  }
+
+  // ── START NEW SESSION ─────────────────────────
+  async function startNewSession() {
+    const res = await Chat.createSession();
+    if (!res.ok) return;
+
+    await loadSessions();
+    openSession(res.data.data.session_id);
+  }
+
+  // ── OPEN A SESSION ─────────────────────────────
+  async function openSession(sessionId) {
+    activeSessionId = sessionId;
+    renderSessions(); // refresh to highlight active session
+
+    // Tell the server we want to join this chat room
+    // From now on, any message sent to this room reaches us instantly
+    socket.emit('join_session', sessionId);
+
+    const chatWindow = document.getElementById('chat-window');
+    chatWindow.innerHTML = `
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="session-avatar bot">
+            <i class="ti ti-robot"></i>
+          </div>
+          <div class="chat-header-info">
+            <h3>SheRights Assistant</h3>
+            <p><span class="connection-dot"></span> Online</p>
+          </div>
+        </div>
+      </div>
+      <div class="messages-area" id="messages-area">
+        <div class="skeleton" style="height:50px;width:60%;border-radius:14px;"></div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" rows="1"
+                  placeholder="Type your message..."
+                  onkeydown="handleInputKeydown(event)"></textarea>
+        <button class="send-btn" onclick="sendMessage()">
+          <i class="ti ti-send"></i>
+        </button>
+      </div>`;
+
+    // Load message history via REST
+    const res = await Chat.getMessages(sessionId);
+    if (!res.ok) return;
+
+    const messagesArea = document.getElementById('messages-area');
+    messagesArea.innerHTML = '';
+
+    if (res.data.data.messages.length === 0) {
+      messagesArea.innerHTML = `
+        <div class="bot-welcome">
+          <i class="ti ti-robot"></i>
+          <p data-key="bot-welcome">
+            Hi! I am the SheRights assistant. How can I help you today?
+          </p>
+        </div>`;
+      applyLanguage(localStorage.getItem('sr-lang') || 'en');
+    } else {
+      res.data.data.messages.forEach(renderMessage);
+    }
+
+    scrollToBottom();
+  }
+
+  // ── RENDER A SINGLE MESSAGE ────────────────────
+  function renderMessage(msg) {
+    const area = document.getElementById('messages-area');
+    if (!area) return;
+
+    // Clear welcome message if present
+    const welcome = area.querySelector('.bot-welcome');
+    if (welcome) welcome.remove();
+
+    const isOwn = msg.sender_id === user.user_id;
+    const time  = new Date(msg.sent_at).toLocaleTimeString('en-GB',
+      { hour: '2-digit', minute: '2-digit' });
+
+    const row = document.createElement('div');
+    row.className = `message-row ${isOwn ? 'own' : ''}`;
+    row.innerHTML = `
+      <div class="message-avatar ${msg.sender_role === 'bot' ? 'bot-avatar' : ''}">
+        <i class="ti ti-${msg.sender_role === 'bot' ? 'robot' : 'user'}"
+           style="font-size:14px;"></i>
+      </div>
+      <div>
+        <div class="message-bubble">${escapeHtml(msg.message_text)}</div>
+        <span class="message-time">${time}</span>
+      </div>`;
+    area.appendChild(row);
+  }
+
+  // Prevent XSS — never trust raw user input in innerHTML
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ── SEND MESSAGE ───────────────────────────────
+  function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const text  = input.value.trim();
+
+    if (!text || !activeSessionId) return;
+
+    // Emit the message through the live socket connection
+    // The server receives this instantly, saves it, and broadcasts
+    // it back to everyone in the room (including us)
+    socket.emit('send_message', {
+      session_id:   activeSessionId,
+      sender_id:    user.user_id,
+      message_text: text
+    });
+
+    input.value = '';
+  }
+
+  function handleInputKeydown(e) {
+    // Enter sends, Shift+Enter makes a new line
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function scrollToBottom() {
+    const area = document.getElementById('messages-area');
+    if (area) area.scrollTop = area.scrollHeight;
+  }
+
+  function handleLogout() {
+    socket.disconnect();
+    localStorage.removeItem('sr-token');
+    localStorage.removeItem('sr-user');
+    window.location.href = 'auth.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', loadSessions);
+</script>
+</body>
+</html>
